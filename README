@@ -1,0 +1,75 @@
+Genastack Openstack Installer
+#############################
+:date: 2014-03-07
+:tags: rackspace, openstack, dev
+:category: \*nix
+
+Build Openstack in a Contained Application. This utility will Compile the necessary bits and install the rest in a stable way.
+
+
+* This is presently a work in progress and does not currently install any openstack packages.
+
+* This application will presently only install Python on a system with all of it required dependencies.
+
+* This application DOES NOT WORK ON RHEL or RHEL based Systems... at least not yet.
+
+
+Building roles is simple:
+  1. Create a python module in the roles directory.
+
+  2. in the ``__init__.py`` file add a constant named `BUILD_DATA`
+
+  3. name your first key the name of the new role. This will get parsed as a run option.
+
+
+Example:
+
+.. code-block:: python
+
+    BUILD_DATA = {
+        'SomeNewRole': {
+            'help': 'A description string',
+            'required': [
+                'Any role that you want to require before executing this new one'
+            ],
+            'libs': [
+                'Any lib that you might want to require, this is the same as a required entry'
+                'The difference between this and a required entry is the precedence.'
+            ],
+            'remote_script': {
+                'get': {
+                    'url': 'https://someURL.somewhere.something/fileName',
+                    'path': TEMP_PATH,
+                    'name': 'Name_file_when_saved',
+                    'uncompress': True or False
+                },
+                'not_if_exists': 'Path/to/some/constraint/to/check',
+                'interpreter': 'path/to/interpreter/to/execute/script',
+            },
+            'build': {
+                'get': {
+                    'url': 'https://someURL.somewhere.something/fileName',
+                    'path': TEMP_PATH,
+                    'name': 'Name_file_when_saved',
+                    'uncompress': True or False
+                },
+                'not_if_exists': 'Path/to/some/constraint/to/check',
+                'build_commands': INSTALL_COMMANDS,
+                'export': [
+                    'environment=some_variable_to_export'
+                ],
+            },
+            'ldconfig': [
+                '/contents/of/ld/file=/location/to/ld/file'
+            ],
+            'packages': {
+                'apt': [
+                    'distro_package',
+                    'some_other_package'
+                ]
+            }
+        }
+    }
+
+
+When you create the new role, the json constant can execute within it python, so feel free to build out all the things.
