@@ -49,8 +49,8 @@ BUILD_DATA = {
                 'name': 'get-pip.py',
                 'uncompress': False
             },
-            'not_if_exists': '%s/bin/pip' % WORK_PATH,
-            'interpreter': '%s/bin/python' % WORK_PATH,
+            'not_if_exists': '%s/pip' % BIN_PATH,
+            'interpreter': '%s/python' % BIN_PATH,
         },
         'build': {
             'get': {
@@ -60,7 +60,7 @@ BUILD_DATA = {
                 'md5sum': '1d8728eb0dfcac72a0fd99c17ec7f386',
                 'uncompress': True
             },
-            'not_if_exists': '%s/bin/python' % WORK_PATH,
+            'not_if_exists': '%s/python' % BIN_PATH,
             'build_commands': INSTALL_COMMANDS,
             'export': [
                 'CFLAGS=-I%s -I/usr/include/x86_64-linux-gnu' % INCLUDE_PATH,

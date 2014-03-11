@@ -13,27 +13,24 @@ from genastack import roles
 BIN_PATH = roles.return_rax_dir('bin')
 
 
-BRANCH = '0.12.0'
-
-
-PROJECT_URL = 'https://github.com/openstack'
-CLIENT = '%s/python-glanceclient.git' % PROJECT_URL
-
-
 BUILD_DATA = {
-    'glance_client': {
-        'help': 'Install Glance-Client from upstream, Branch "%s"' % BRANCH,
-        'pip_install': {
-            'pip_bin': '%s/pip' % BIN_PATH,
-            'pip_packages': [
-                'git+%s@%s' % (CLIENT, BRANCH)
-            ],
-        },
-        'packages': {
-            'apt': [
-                'libffi-dev'
-            ]
-        }
-
+    'glance_api': {
+        'help': 'Install Glance-Registry from upstream',
+        'required': [
+            'python',
+            'glance'
+            'glance_client'
+        ],
+        'init_script': [
+            {
+                'help': 'Start and stop glance on boot',
+                'init_path': '/etc/init.d',
+                'bin_path': BIN_PATH,
+                'name': 'glance-registry',
+                'chuid': 'glance',
+                'chdir': '/var/lib/glance',
+                'program': 'glance-registry'
+            }
+        ]
     }
 }
