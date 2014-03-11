@@ -32,8 +32,7 @@ BUILD_DATA = {
     'keystone': {
         'help': 'Install Keystone from upstream on Branch "%s"' % BRANCH,
         'required': [
-            'python',
-            'keystone_client'
+            'python'
         ],
         'directories': [
             {
@@ -125,17 +124,6 @@ BUILD_DATA = {
                 'libjs-sphinxdoc',
                 'libjs-underscore'
             ]
-        },
-        'init_script': [
-            {
-                'help': 'Start and stop keystone on boot',
-                'init_path': '/etc/init.d',
-                'bin_path': BIN_PATH,
-                'name': 'keystone',
-                'chuid': 'keystone',
-                'chdir': '/var/lib/keystone',
-                'program': 'keystone-all'
-            }
-        ]
+        }
     }
 }
