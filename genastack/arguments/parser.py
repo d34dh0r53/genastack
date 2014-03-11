@@ -25,10 +25,12 @@ def argument_parser():
     for arg, items in args:
         parser.add_argument(arg, **items)
 
-    subpar = parser.add_subparsers()
+    subpar = parser.add_subparsers(
+        title='Package Installer', metavar='<Commands>\n'
+    )
     for role in role_loader.RoleLoad(config_type=None).load_all_roles():
         for key, value in role.items():
-            base = subpar.add_parser(key)
+            base = subpar.add_parser(key, help=value.get('help'))
             base.set_defaults(method=key)
     return parser
 

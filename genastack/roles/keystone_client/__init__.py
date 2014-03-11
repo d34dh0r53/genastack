@@ -7,21 +7,26 @@
 # details (see GNU General Public License).
 # http://www.gnu.org/licenses/gpl.html
 # =============================================================================
+from genastack import roles
 
-DEFAULT_ARGS = {
-    '--debug': {
-        'help': 'Make the script debug',
-        'action': 'store_true',
-        'default': False,
-    },
-    '--print-only': {
-        'help': 'Print the build map ONLY',
-        'action': 'store_true',
-        'default': False,
-    },
-    '--force': {
-        'help': 'For the installation no matter any constraints',
-        'action': 'store_true',
-        'default': False,
+
+BIN_PATH = roles.return_rax_dir('bin')
+
+
+BRANCH = '0.6.0'
+
+PROJECT_URL = 'https://github.com/openstack'
+CLIENT = '%s/python-keystoneclient.git@%s' % (PROJECT_URL, BRANCH)
+
+
+BUILD_DATA = {
+    'keystone_client': {
+        'help': 'Install Keystone client from upstream, Branch "%s"' % BRANCH,
+        'pip_install': {
+            'pip_bin': '%s/pip' % BIN_PATH,
+            'pip_packages': [
+                'git+%s' % CLIENT
+            ],
+        }
     }
 }

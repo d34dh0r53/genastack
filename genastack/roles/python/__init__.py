@@ -79,7 +79,10 @@ BUILD_DATA = {
                 'mysql-python',
                 'pbr',
                 'pysqlite',
-                'virtualenv'
+                'virtualenv',
+                'pep8',
+                'flake8',
+                'hacking'
             ],
         },
         'packages': {

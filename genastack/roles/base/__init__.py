@@ -50,6 +50,9 @@ BUILD_DATA = {
                 'curl',
                 'openssl',
                 'build-essential',
+                'bridge-utils',
+                'cgroup-lite',
+                'gawk'
             ]
         },
         'directories': [
@@ -75,11 +78,11 @@ BUILD_DATA = {
         'file_create': [
             {
                 'path': '/etc/profile.d',
-                'name': 'rackspace.sh',
+                'name': 'rackspace_default.sh',
                 'contents': RAX_BIN_SCRIPT,
                 'user': 'root',
                 'group': 'root',
-                'mode': 0644
+                'mode': 0755
             }
         ]
     }

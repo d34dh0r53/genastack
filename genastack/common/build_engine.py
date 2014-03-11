@@ -18,6 +18,7 @@ import tarfile
 import genastack
 from genastack.common import utils
 from genastack.common import role_loader
+from genastack.common import basic_init
 
 LOG = logging.getLogger('genastack-engine')
 
@@ -49,14 +50,13 @@ class EngineRunner(object):
                 command, shell=True, env=env, stdout=output
             )
 
-    @staticmethod
-    def __not_if_exists(check):
+    def __not_if_exists(self, check):
         """Return False if the constraint is Met otherwise return True.
 
         :param check: ``dict``
         :return: ``bol``
         """
-        if 'not_if_exists' in check:
+        if 'not_if_exists' in check and self.args['force'] is False:
             exist = os.path.exists(check['not_if_exists'])
             if exist is True:
                 LOG.info(
@@ -66,8 +66,7 @@ class EngineRunner(object):
                 return True
         return False
 
-    @staticmethod
-    def _ldconfig(args):
+    def _ldconfig(self, args):
         """Create lib links on the system.
 
         :param: args: ``list``
@@ -77,6 +76,7 @@ class EngineRunner(object):
             LOG.info('Settings LD Config [ %s ]' % local_file)
             with open(local_file, 'wb') as f:
                 f.write(contents)
+        self.__execute_command(commands=['ldconfig'])
 
     @staticmethod
     def __get(kwargs):
@@ -117,6 +117,32 @@ class EngineRunner(object):
         pip_bin = kwargs['pip_bin']
         pip_install_all = ['%s install %s' % (pip_bin, p) for p in pip_packages]
         self.__execute_command(commands=pip_install_all)
+
+    def _init_script(self, kwargs):
+        """Place a generic init script on the system.
+
+        :param kwargs: ``dict``
+        """
+        path = kwargs['path']
+        name = kwargs['name']
+        kwargs['user'] = 'root'
+        kwargs['group'] = 'root'
+        kwargs['mode'] = 755
+        full_path = os.path.join(path, name)
+        kwargs['bin'] = full_path
+
+        script = basic_init.INIT_SCRIPT % kwargs
+        kwargs['contents'] = script
+        self._file_create(args=[kwargs])
+
+        debian_based, rhel_based = self.__distro_check()
+        if debian_based:
+            command = ['update-rc.d %(name)s defaults' % kwargs]
+        elif rhel_based:
+            #TODO(kevin) Support RHEL
+            raise genastack.CantContinue('No RHEL Support at this time.')
+
+        self.__execute_command(commands=command)
 
     def _remote_script(self, kwargs):
         """Execute a remote script on the local system.
@@ -177,8 +203,14 @@ class EngineRunner(object):
             file_path = os.path.join(path, name)
             if not os.path.exists(file_path):
                 self._directories(args=[file_create])
-                with open(file_path, 'wb') as local_file:
-                    local_file.write(file_create['contents'])
+
+                if 'from_remote' in file_create:
+                    file_create['url'] = file_create['from_remote']
+                    self.__get(kwargs=file_create)
+                elif 'contents' in file_create:
+                    with open(file_path, 'wb') as local_file:
+                        local_file.write(file_create['contents'])
+
                 LOG.info('Created file [ %s ]', file_path)
                 self.__set_perms(inode=file_path, kwargs=file_create)
 
@@ -190,7 +222,7 @@ class EngineRunner(object):
         :param inode: ``str``
         :param kwargs: ``dict``
         """
-        # Get User ID 
+        # Get User ID
         _user = kwargs.get('user', 'root')
         user = pwd.getpwnam(_user).pw_uid
 
@@ -217,16 +249,20 @@ class EngineRunner(object):
                 utils.mkdir_p(path=path)
                 self.__set_perms(inode=path, kwargs=directory)
 
+    def __distro_check(self):
+        """Return True or False for the detected distro."""
+        distro = platform.linux_distribution()
+        distro = [d.lower() for d in distro]
+        debian_based = any(['ubuntu' in distro, 'debian' in distro])
+        rhel_based = any(['centos' in distro, 'redhat' in distro])
+        return debian_based, rhel_based
+
     def _packages(self, kwargs):
         """Install operating system packages for the system.
 
         :param: kwargs: ``dict``
         """
-        distro = platform.linux_distribution()
-        distro = [d.lower() for d in distro]
-        debian_based = any(['ubuntu' in distro, 'debian' in distro])
-        rhel_based = any(['centos' in distro, 'redhat' in distro])
-
+        debian_based, rhel_based = self.__distro_check()
         if debian_based:
             _packages = kwargs.get('apt')
             packages = ' '.join(_packages)
@@ -241,9 +277,7 @@ class EngineRunner(object):
             self.__execute_command(commands=commands)
         elif rhel_based:
             #TODO(kevin) Support RHEL
-            raise genastack.CantContinue(
-                'No RHEL Support at this time.'
-            )
+            raise genastack.CantContinue('No RHEL Support at this time.')
 
     def run(self, init_items):
         """Run the method."""
@@ -285,3 +319,6 @@ class EngineRunner(object):
 
         if 'pip_install' in init_items:
             self._pip_install(kwargs=init_items.pop('pip_install'))
+
+        if 'init_script' in init_items:
+            self._init_script(kwargs=init_items.pop('init_script'))
