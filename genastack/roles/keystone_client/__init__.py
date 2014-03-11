@@ -15,8 +15,9 @@ BIN_PATH = roles.return_rax_dir('bin')
 
 BRANCH = '0.6.0'
 
+
 PROJECT_URL = 'https://github.com/openstack'
-CLIENT = '%s/python-keystoneclient.git@%s' % (PROJECT_URL, BRANCH)
+CLIENT = '%s/python-keystoneclient.git' % PROJECT_URL
 
 
 BUILD_DATA = {
@@ -25,7 +26,7 @@ BUILD_DATA = {
         'pip_install': {
             'pip_bin': '%s/pip' % BIN_PATH,
             'pip_packages': [
-                'git+%s' % CLIENT
+                'git+%s@%s' % (CLIENT, BRANCH)
             ],
         }
     }

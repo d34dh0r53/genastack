@@ -14,6 +14,9 @@ from genastack import roles
 TEMP_PATH = roles.return_temp_dir()
 WORK_PATH = roles.return_rax_dir()
 LIBS_PATH = roles.return_rax_dir(path='lib')
+LIBS_PATH = roles.return_rax_dir(path='libexec')
+BIN_PATH = roles.return_rax_dir(path='bin')
+SBIN_PATH = roles.return_rax_dir(path='sbin')
 
 
 BZIP_URL = 'http://www.bzip.org/1.0.6/bzip2-1.0.6.tar.gz'
@@ -24,7 +27,7 @@ RAX_BIN_SCRIPT = """
 RAX_PATH="/opt/rackspace/bin"
 
 if ! echo ${PATH} | /bin/grep -q ${RAX_PATH} ; then
-PATH=${RAX_PATH}:${PATH}
+PATH=${PATH}:${RAX_PATH}
 fi
 """
 
@@ -58,6 +61,18 @@ BUILD_DATA = {
         'directories': [
             {
                 'path': '/etc/profile.d',
+                'user': 'root',
+                'group': 'root',
+                'mode': 0755
+            },
+            {
+                'path': SBIN_PATH,
+                'user': 'root',
+                'group': 'root',
+                'mode': 0755
+            },
+            {
+                'path': BIN_PATH,
                 'user': 'root',
                 'group': 'root',
                 'mode': 0755

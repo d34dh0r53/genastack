@@ -29,6 +29,59 @@ class EngineRunner(object):
     def __init__(self, args):
         self.args = args
 
+    @staticmethod
+    def __set_perms(inode, kwargs):
+        """Set the permissions on a local inode.
+
+        :param inode: ``str``
+        :param kwargs: ``dict``
+        """
+        # Get User ID
+        _user = kwargs.get('user', 'root')
+        user = pwd.getpwnam(_user).pw_uid
+
+        # Get Group ID
+        _group = kwargs.get('group', 'root')
+        group = grp.getgrnam(_group).gr_gid
+
+        mode = kwargs.get('mode', 0644)
+        os.chown(inode, user, group)
+        os.chmod(inode, int(mode))
+        LOG.info(
+            'Permissions Set [ %s ] user=%s, group=%s, mode=%s',
+            inode, user, group, mode
+        )
+
+    @staticmethod
+    def __get(kwargs):
+        """Download a remote file to a local place on the system.
+
+        :param kwargs: ``dict``
+        """
+        url = kwargs.get('url')
+        headers = kwargs.get('headers')
+        if headers is None:
+            headers = {}
+        local_path = kwargs.get('path')
+        file_name = kwargs.get('name')
+        local_file = os.path.join(local_path, file_name)
+
+        LOG.info('Downloading [ %s ] to [ %s ]', url, local_path)
+        utils.download(url, headers=headers, local_file=local_file)
+        utils.md5_checker(md5sum=kwargs.get('md5sum'), local_file=local_file)
+        if kwargs.get('uncompress') is True:
+            local_path = kwargs.get('path')
+
+            LOG.info('Uncompressing [ %s ] to [ %s ]', file_name, local_path)
+            tarball = os.path.join(local_path, file_name)
+            tar = tarfile.open(tarball)
+            tar.extractall(path=local_path)
+            tar.close()
+            file_dir = os.path.splitext(file_name)
+            return os.path.join(local_path, file_dir[0])
+        else:
+            return local_path
+
     def __execute_command(self, commands, env=None):
         """Execute a list of commands.
 
@@ -78,36 +131,6 @@ class EngineRunner(object):
                 f.write(contents)
         self.__execute_command(commands=['ldconfig'])
 
-    @staticmethod
-    def __get(kwargs):
-        """Download a remote file to a local place on the system.
-
-        :param kwargs: ``dict``
-        """
-        url = kwargs.get('url')
-        headers = kwargs.get('headers')
-        if headers is None:
-            headers = {}
-        local_path = kwargs.get('path')
-        file_name = kwargs.get('name')
-        local_file = os.path.join(local_path, file_name)
-
-        LOG.info('Downloading [ %s ] to [ %s ]', url, local_path)
-        utils.download(url, headers=headers, local_file=local_file)
-        utils.md5_checker(md5sum=kwargs.get('md5sum'), local_file=local_file)
-        if kwargs.get('uncompress') is True:
-            local_path = kwargs.get('path')
-
-            LOG.info('Uncompressing [ %s ] to [ %s ]', file_name, local_path)
-            tarball = os.path.join(local_path, file_name)
-            tar = tarfile.open(tarball)
-            tar.extractall(path=local_path)
-            tar.close()
-            file_dir = os.path.splitext(file_name)
-            return os.path.join(local_path, file_dir[0])
-        else:
-            return local_path
-
     def _pip_install(self, kwargs):
         """Install Python Packages with pip.
 
@@ -123,17 +146,41 @@ class EngineRunner(object):
 
         :param kwargs: ``dict``
         """
-        path = kwargs['path']
-        name = kwargs['name']
-        kwargs['user'] = 'root'
-        kwargs['group'] = 'root'
-        kwargs['mode'] = 755
-        full_path = os.path.join(path, name)
+        bin_path = kwargs['bin_path']
+        name = kwargs['program']
+        full_path = os.path.join(bin_path, name)
+
         kwargs['bin'] = full_path
+        kwargs['exec'] = ' '.join([kwargs['bin'], kwargs.get('options', '')])
+        kwargs['pid_file'] = '/var/run/%s.pid' % name
+
+        ssd = [
+            '--start',
+            '--background',
+            '--make-pidfile',
+            '--pidfile %(pid_file)s'
+        ]
+
+        if 'chuid' in kwargs:
+            ssd.append('--chuid %s' % kwargs['chuid'])
+
+        if 'chdir' in kwargs:
+            ssd.append('--chdir %s' % kwargs['chdir'])
+
+        ssd.append('--exec %(exec)s')
+        kwargs['start_stop_daemon'] = ' '.join(ssd) % kwargs
 
         script = basic_init.INIT_SCRIPT % kwargs
-        kwargs['contents'] = script
-        self._file_create(args=[kwargs])
+        file_create = {
+            'path': kwargs['init_path'],
+            'name': kwargs['name'],
+            'contents': script,
+            'group': 'root',
+            'user': 'root',
+            'mode': 0755
+        }
+
+        self._file_create(args=[file_create])
 
         debian_based, rhel_based = self.__distro_check()
         if debian_based:
@@ -190,6 +237,83 @@ class EngineRunner(object):
         finally:
             os.chdir(cwd)
 
+    def _group_create(self, args):
+        """Create local file on the system.
+
+        If the path to the file does not exist, the path will be created.
+
+        :param: args: ``list``
+        """
+        for group_create in args:
+            try:
+                grp.getgrnam(group_create.get('group'))
+            except KeyError:
+                group = ['groupadd']
+
+                # Basic user or System user
+                if group_create.get('system') is True:
+                    user_type = '--system %(group)s'
+                else:
+                    user_type = '%(group)s'
+
+                group.append(user_type)
+                command = [' '.join(group) % group_create]
+                self.__execute_command(commands=command)
+                LOG.info('Group Created [ %s ]', group_create['group'])
+            else:
+                LOG.info(
+                    'No Group Created it already Exists [ %s ]',
+                    group_create['group']
+                )
+
+    def _user_create(self, args):
+        """Create local file on the system.
+
+        If the path to the file does not exist, the path will be created.
+
+        :param: args: ``list``
+        """
+        for user_create in args:
+            try:
+                pwd.getpwnam(user_create.get('user'))
+            except KeyError:
+                user = ['useradd']
+                # Group assignment
+                no_group = user_create.get('no_group')
+                group = user_create.get('group')
+                if no_group is True or group is None:
+                    user.append('--no-user-group')
+                else:
+                    user.append('--gid %(group)s')
+
+                # User assignment
+                no_home = user_create.get('no_home')
+                home = user_create.get('home')
+                if no_home is True or home is None:
+                    user.append('--no-create-home')
+                else:
+                    user.append('--create-home --home-dir %(home)s')
+
+                # Set the user shell
+                shell = user_create.get('shell', '/bin/false')
+                user.append('--shell %s' % shell)
+
+                # Basic user or System user
+                if user_create.get('system') is True:
+                    user_type = '--system %(user)s'
+                else:
+                    user_type = '%(user)s'
+
+                user.append(user_type)
+                command = [' '.join(user) % user_create]
+                self.__execute_command(commands=command)
+                LOG.info('User Created [ %s ]', user_create['user'])
+            else:
+                LOG.info(
+                    'No User Created it already Exists [ %s ]',
+                    user_create['user']
+                )
+
     def _file_create(self, args):
         """Create local file on the system.
 
@@ -203,40 +327,18 @@ class EngineRunner(object):
             file_path = os.path.join(path, name)
             if not os.path.exists(file_path):
                 self._directories(args=[file_create])
-
+                print file_path
                 if 'from_remote' in file_create:
                     file_create['url'] = file_create['from_remote']
                     self.__get(kwargs=file_create)
                 elif 'contents' in file_create:
                     with open(file_path, 'wb') as local_file:
                         local_file.write(file_create['contents'])
+                else:
+                    raise genastack.CantContinue('no file to create')
 
                 LOG.info('Created file [ %s ]', file_path)
                 self.__set_perms(inode=file_path, kwargs=file_create)
-
-
-    @staticmethod
-    def __set_perms(inode, kwargs):
-        """Set the permissions on a local inode.
-
-        :param inode: ``str``
-        :param kwargs: ``dict``
-        """
-        # Get User ID
-        _user = kwargs.get('user', 'root')
-        user = pwd.getpwnam(_user).pw_uid
-
-        # Get Group ID
-        _group = kwargs.get('group', 'root')
-        group = grp.getgrnam(_group).gr_gid
-
-        mode = kwargs.get('mode', 0644)
-        os.chown(inode, user, group)
-        os.chmod(inode, int(mode))
-        LOG.info(
-            'Permissions Set [ %s ] user=%s, group=%s, mode=%s',
-            inode, user, group, mode
-        )
 
     def _directories(self, args):
         """Create local directories on the system.
@@ -287,7 +389,13 @@ class EngineRunner(object):
             for requirement in libs_list:
                 _requirement = role_loader.RoleLoad(config_type=requirement)
                 requirement_init = _requirement.load_role()
-                self.run(init_items=requirement_init)
+                self.run(init_items=requirement_init.copy())
+
+        if 'group_create' in init_items:
+            self._group_create(args=init_items.pop('group_create'))
+
+        if 'user_create' in init_items:
+            self._user_create(args=init_items.pop('user_create'))
 
         if 'file_create' in init_items:
             self._file_create(args=init_items.pop('file_create'))

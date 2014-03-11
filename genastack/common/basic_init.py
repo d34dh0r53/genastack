@@ -6,23 +6,21 @@ INIT_SCRIPT = """#! /usr/bin/env bash
 # Required-Stop:     $remote_fs $syslog
 # Should-Start:      $named
 # Default-Start:     2 3 4 5
-# Default-Stop:
+# Default-Stop:      0 1 6
 # Short-Description: %(help)s
 # Description:       %(help)s
 ### END INIT INFO
 
 set -e
 
-PROGRAM_NAME="%(program)s"
-
-DAEMON="%(bin)s %(options)s"
-PID_FILE="/var/run/${PROGRAM_NAME}.pid"
+DAEMON="%(bin)s"
+PID_FILE="%(pid_file)s"
 
 source /lib/lsb/init-functions
 export PATH="${PATH:+$PATH:}/usr/sbin:/sbin"
 
 program_start() {
-    if start-stop-daemon --start --quiet --background --pidfile ${PID_FILE} --make-pidfile --exec $DAEMON; then
+    if start-stop-daemon %(start_stop_daemon)s; then
         rc=0
         sleep 1
         if ! kill -0 $(cat ${PID_FILE}) >/dev/null 2>&1; then

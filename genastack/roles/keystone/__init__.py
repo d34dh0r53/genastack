@@ -16,6 +16,7 @@ BIN_PATH = roles.return_rax_dir('bin')
 BRANCH = 'stable/havana'
 
 
+KEYSTONE_PROJECT = 'https://github.com/openstack/keystone.git'
 PROJECT_URL = 'https://raw.github.com/openstack/keystone/%s' % BRANCH
 URL_PATH = '%s/etc' % PROJECT_URL
 
@@ -36,11 +37,37 @@ BUILD_DATA = {
         ],
         'directories': [
             {
+                'path': '/var/log/keystone',
+                'user': 'keystone',
+                'group': 'keystone',
+                'mode': 0755
+            },
+            {
+                'path': '/var/lib/keystone',
+                'user': 'keystone',
+                'group': 'keystone',
+                'mode': 0755
+            },
+            {
                 'path': '/etc/keystone',
                 'user': 'root',
                 'group': 'root',
                 'mode': 0755
-            },
+            }
+        ],
+        'group_create': [
+            {
+                'group': 'keystone',
+                'system': True
+            }
+        ],
+        'user_create': [
+            {
+                'user': 'keystone',
+                'group': 'keystone',
+                'home': '/var/lib/keystone',
+                'system': True
+            }
         ],
         'file_create': [
             {
@@ -87,7 +114,7 @@ BUILD_DATA = {
         'pip_install': {
             'pip_bin': '%s/pip' % BIN_PATH,
             'pip_packages': [
-                'git+https://github.com/openstack/keystone.git@stable/havana'
+                'git+%s@%s' % (KEYSTONE_PROJECT, BRANCH)
             ],
         },
         'packages': {
@@ -98,6 +125,15 @@ BUILD_DATA = {
                 'libjs-sphinxdoc',
                 'libjs-underscore'
             ]
+        },
+        'init_script': {
+            'help': 'Start and stop keystone on boot',
+            'init_path': '/etc/init.d',
+            'bin_path': BIN_PATH,
+            'name': 'keystone',
+            'chuid': 'keystone',
+            'chdir': '/var/lib/keystone',
+            'program': 'keystone-all'
         }
     }
 }

@@ -27,7 +27,7 @@ RAX_SBIN_SCRIPT = """
 RAX_PATH="/opt/rackspace/sbin"
 
 if ! echo ${PATH} | /bin/grep -q ${RAX_PATH} ; then
-PATH=${RAX_PATH}:${PATH}
+PATH=${PATH}:${RAX_PATH}
 fi
 """
 
