@@ -14,11 +14,11 @@ BIN_PATH = roles.return_rax_dir('bin')
 
 
 BUILD_DATA = {
-    'cinder_api': {
+    'cinder_volume': {
         'help': 'Install Cinder-Volume from upstream',
         'required': [
             'python',
-            'cinder'
+            'cinder',
             'cinder_client'
         ],
         'init_script': [

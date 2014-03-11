@@ -18,7 +18,7 @@ BUILD_DATA = {
         'help': 'Install Cinder-API from upstream',
         'required': [
             'python',
-            'cinder'
+            'cinder',
             'cinder_client'
         ],
         'init_script': [

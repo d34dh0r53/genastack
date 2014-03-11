@@ -7,6 +7,8 @@
 # details (see GNU General Public License).
 # http://www.gnu.org/licenses/gpl.html
 # =============================================================================
+import os
+
 from genastack import roles
 
 
@@ -41,17 +43,19 @@ BUILD_DATA = {
             'mysql_connector'
         ],
         'help': 'Install the python packages and python on a system.',
-        'remote_script': {
-            'help': 'Install pip.',
-            'get': {
-                'url': PIP_URL,
-                'path': TEMP_PATH,
-                'name': 'get-pip.py',
-                'uncompress': False
-            },
-            'not_if_exists': '%s/pip' % BIN_PATH,
-            'interpreter': '%s/python' % BIN_PATH,
-        },
+        'remote_script': [
+            {
+                'help': 'Install pip.',
+                'get': {
+                    'url': PIP_URL,
+                    'path': TEMP_PATH,
+                    'name': 'get-pip.py',
+                    'uncompress': False
+                },
+                'not_if_exists': os.path.join(BIN_PATH, 'pip'),
+                'interpreter': os.path.join(BIN_PATH, 'python'),
+            }
+        ],
         'build': {
             'get': {
                 'url': PYTHON_URL,
@@ -60,7 +64,7 @@ BUILD_DATA = {
                 'md5sum': '1d8728eb0dfcac72a0fd99c17ec7f386',
                 'uncompress': True
             },
-            'not_if_exists': '%s/python' % BIN_PATH,
+            'not_if_exists': os.path.join(BIN_PATH, 'python'),
             'build_commands': INSTALL_COMMANDS,
             'export': [
                 'CFLAGS=-I%s -I/usr/include/x86_64-linux-gnu' % INCLUDE_PATH,
@@ -71,7 +75,7 @@ BUILD_DATA = {
             '/opt/python27/lib=/etc/ld.so.conf.d/python27.conf'
         ],
         'pip_install': {
-            'pip_bin': '%s/pip' % BIN_PATH,
+            'pip_bin': os.path.join(BIN_PATH, 'pip'),
             'pip_packages': [
                 'bz2file',
                 'd2to1',

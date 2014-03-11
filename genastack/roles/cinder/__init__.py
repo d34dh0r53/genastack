@@ -18,7 +18,7 @@ BRANCH = 'stable/havana'
 
 CINDER_PROJECT = 'https://github.com/openstack/cinder.git'
 PROJECT_URL = 'https://raw.github.com/openstack/cinder/%s' % BRANCH
-URL_PATH = '%s/etc' % PROJECT_URL
+URL_PATH = '%s/etc/cinder' % PROJECT_URL
 
 
 CINDER_API_PASTE = '%s/api-paste.ini' % URL_PATH

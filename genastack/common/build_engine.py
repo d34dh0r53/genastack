@@ -425,8 +425,10 @@ class EngineRunner(object):
             self._ldconfig(args=init_items.pop('ldconfig'))
 
         if 'remote_script' in init_items:
-            if not self.__not_if_exists(check=init_items):
-                self._remote_script(kwargs=init_items.pop('remote_script'))
+            remote_script = init_items.pop('remote_script')
+            for script in remote_script:
+                if not self.__not_if_exists(check=script):
+                    self._remote_script(kwargs=script)
 
         if 'pip_install' in init_items:
             self._pip_install(kwargs=init_items.pop('pip_install'))
