@@ -11,7 +11,7 @@
 import setuptools
 import sys
 
-from turbolift import info
+from genastack import info
 
 with open('requirements.txt') as f:
     required = f.read().splitlines()
@@ -58,11 +58,11 @@ setuptools.setup(
         'genastack.roles.keystone_all',
         'genastack.roles.keystone_api',
         'genastack.roles.keystone_client',
-        'libvirt',
-        'mysql_connector',
-        'openssl',
-        'postgres_connector',
-        'python'
+        'genastack.roles.libvirt',
+        'genastack.roles.mysql_connector',
+        'genastack.roles.openssl',
+        'genastack.roles.postgres_connector',
+        'genastack.roles.python'
     ],
     url=info.__url__,
     install_requires=required,

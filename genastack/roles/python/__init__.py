@@ -86,7 +86,8 @@ BUILD_DATA = {
                 'virtualenv',
                 'pep8',
                 'flake8',
-                'hacking'
+                'hacking',
+                'iso8601'
             ],
         },
         'packages': {

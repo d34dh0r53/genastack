@@ -13,6 +13,7 @@ __email__ = "kevin.carter@RACKSPACE.COM"
 __copyright__ = "2013 All Rights Reserved"
 __version__ = "0.0.1"
 __status__ = "BETA"
+__url__ = "https://github.com/cloudnull/genastack"
 __appname__ = "genastack"
 __license__ = 'GNU General Public License v3 or later (GPLv3+)'
 __description__ = 'Install Openstack from source in an Automated fashion'

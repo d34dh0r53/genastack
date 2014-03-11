@@ -118,6 +118,7 @@ BUILD_DATA = {
         },
         'packages': {
             'apt': [
+                'libsasl2-dev'
                 'debhelper',
                 'dh-apparmor',
                 'docutils-common',
