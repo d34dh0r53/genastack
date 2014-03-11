@@ -50,8 +50,8 @@ BUILD_DATA = {
             },
             {
                 'path': '/etc/keystone',
-                'user': 'root',
-                'group': 'root',
+                'user': 'keystone',
+                'group': 'keystone',
                 'mode': 0755
             }
         ],
@@ -74,40 +74,40 @@ BUILD_DATA = {
                 'path': '/etc/keystone',
                 'name': 'keystone.conf',
                 'from_remote': KEYSTONE_CONF,
-                'user': 'root',
-                'group': 'root',
+                'user': 'keystone',
+                'group': 'keystone',
                 'mode': 0644
             },
             {
                 'path': '/etc/keystone',
                 'name': 'keystone-paste.ini',
                 'from_remote': KEYSTONE_PASTE,
-                'user': 'root',
-                'group': 'root',
+                'user': 'keystone',
+                'group': 'keystone',
                 'mode': 0644
             },
             {
                 'path': '/etc/keystone',
                 'name': 'logging.conf.sample',
                 'from_remote': KEYSTONE_LOGGING,
-                'user': 'root',
-                'group': 'root',
+                'user': 'keystone',
+                'group': 'keystone',
                 'mode': 0644
             },
             {
                 'path': '/etc/keystone',
                 'name': 'policy.json',
                 'from_remote': KEYSTONE_POLICY_JSON,
-                'user': 'root',
-                'group': 'root',
+                'user': 'keystone',
+                'group': 'keystone',
                 'mode': 0644
             },
             {
                 'path': '/etc/keystone',
                 'name': 'policy.v3cloudsample.json',
                 'from_remote': KEYSTONE_POLICY_JSON_V3API,
-                'user': 'root',
-                'group': 'root',
+                'user': 'keystone',
+                'group': 'keystone',
                 'mode': 0644
             }
         ],
@@ -126,14 +126,16 @@ BUILD_DATA = {
                 'libjs-underscore'
             ]
         },
-        'init_script': {
-            'help': 'Start and stop keystone on boot',
-            'init_path': '/etc/init.d',
-            'bin_path': BIN_PATH,
-            'name': 'keystone',
-            'chuid': 'keystone',
-            'chdir': '/var/lib/keystone',
-            'program': 'keystone-all'
-        }
+        'init_script': [
+            {
+                'help': 'Start and stop keystone on boot',
+                'init_path': '/etc/init.d',
+                'bin_path': BIN_PATH,
+                'name': 'keystone',
+                'chuid': 'keystone',
+                'chdir': '/var/lib/keystone',
+                'program': 'keystone-all'
+            }
+        ]
     }
 }

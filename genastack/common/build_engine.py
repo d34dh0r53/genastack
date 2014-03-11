@@ -326,8 +326,7 @@ class EngineRunner(object):
             name = file_create['name']
             file_path = os.path.join(path, name)
             if not os.path.exists(file_path):
-                self._directories(args=[file_create])
-                print file_path
+                self._directories(args=[file_create], mode_if=0755)
                 if 'from_remote' in file_create:
                     file_create['url'] = file_create['from_remote']
                     self.__get(kwargs=file_create)
@@ -340,15 +339,18 @@ class EngineRunner(object):
                 LOG.info('Created file [ %s ]', file_path)
                 self.__set_perms(inode=file_path, kwargs=file_create)
 
-    def _directories(self, args):
+    def _directories(self, args, mode_if=None):
         """Create local directories on the system.
 
         :param: args: ``list``
+        :param: mode_if: ``int``
         """
         for directory in args:
             path = directory['path']
-            if not os.path.exists(path):
+            if os.path.isdir(path) is False:
                 utils.mkdir_p(path=path)
+                if mode_if is not None:
+                    directory['mode'] = mode_if
                 self.__set_perms(inode=path, kwargs=directory)
 
     def __distro_check(self):
@@ -389,7 +391,7 @@ class EngineRunner(object):
             for requirement in libs_list:
                 _requirement = role_loader.RoleLoad(config_type=requirement)
                 requirement_init = _requirement.load_role()
-                self.run(init_items=requirement_init.copy())
+                self.run(init_items=requirement_init)
 
         if 'group_create' in init_items:
             self._group_create(args=init_items.pop('group_create'))
@@ -397,11 +399,11 @@ class EngineRunner(object):
         if 'user_create' in init_items:
             self._user_create(args=init_items.pop('user_create'))
 
-        if 'file_create' in init_items:
-            self._file_create(args=init_items.pop('file_create'))
-
         if 'directories' in init_items:
             self._directories(args=init_items.pop('directories'))
+
+        if 'file_create' in init_items:
+            self._file_create(args=init_items.pop('file_create'))
 
         if 'packages' in init_items:
             self._packages(kwargs=init_items.pop('packages'))
@@ -429,4 +431,6 @@ class EngineRunner(object):
             self._pip_install(kwargs=init_items.pop('pip_install'))
 
         if 'init_script' in init_items:
-            self._init_script(kwargs=init_items.pop('init_script'))
+            init_scripts = init_items.pop('init_script')
+            for script in init_scripts:
+                self._init_script(kwargs=script)
