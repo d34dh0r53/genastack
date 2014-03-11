@@ -21,14 +21,18 @@ PROJECT_URL = 'https://raw.github.com/openstack/glance/%s' % BRANCH
 URL_PATH = '%s/etc' % PROJECT_URL
 
 
-GLANCE_REGISTRY_PASTE = '%s/glance-registry-paste.ini' % URL_PATH
-GLANCE_REGISTRY_CONF = '%s/glance-registry.conf' % URL_PATH
+GLANCE_API_PASTE = '%s/glance-api-paste.ini' % URL_PATH
+GLANCE_API_CONF = '%s/glance-api.conf' % URL_PATH
+GLANCE_CACHE_CONF = '%s/glance-cache.conf' % URL_PATH
+GLANCE_SCRUBBER_CONF = '%s/glance-scrubber.conf' % URL_PATH
 GLANCE_LOGGING_CNF = '%s/logging.cnf.sample' % URL_PATH
 GLANCE_POLICY_JSON = '%s/policy.json' % URL_PATH
+GLANCE_SCHEMA_IMAGE_JSON = '%s/schema-image.json' % URL_PATH
+GLANCE_PROPERTY = '%s/property-protections.conf.sample' % URL_PATH
 
 
 BUILD_DATA = {
-    'glance-registry': {
+    'glance-api': {
         'help': 'Install Glance from upstream on Branch "%s"' % BRANCH,
         'required': [
             'python',
@@ -71,16 +75,40 @@ BUILD_DATA = {
         'file_create': [
             {
                 'path': '/etc/glance',
-                'name': 'glance-registry-paste.ini',
-                'from_remote': GLANCE_REGISTRY_PASTE,
+                'name': 'glance-api-paste.ini',
+                'from_remote': GLANCE_API_PASTE,
                 'user': 'glance',
                 'group': 'glance',
                 'mode': 0644
             },
             {
                 'path': '/etc/glance',
-                'name': 'glance-registry.conf',
-                'from_remote': GLANCE_REGISTRY_CONF,
+                'name': 'glance-api.conf',
+                'from_remote': GLANCE_API_CONF,
+                'user': 'glance',
+                'group': 'glance',
+                'mode': 0644
+            },
+            {
+                'path': '/etc/glance',
+                'name': 'glance-cache.conf',
+                'from_remote': GLANCE_CACHE_CONF,
+                'user': 'glance',
+                'group': 'glance',
+                'mode': 0644
+            },
+            {
+                'path': '/etc/glance',
+                'name': 'policy.json',
+                'from_remote': GLANCE_POLICY_JSON,
+                'user': 'glance',
+                'group': 'glance',
+                'mode': 0644
+            },
+            {
+                'path': '/etc/glance',
+                'name': 'glance-scrubber.conf',
+                'from_remote': GLANCE_SCRUBBER_CONF,
                 'user': 'glance',
                 'group': 'glance',
                 'mode': 0644
@@ -97,6 +125,22 @@ BUILD_DATA = {
                 'path': '/etc/glance',
                 'name': 'policy.json',
                 'from_remote': GLANCE_POLICY_JSON,
+                'user': 'glance',
+                'group': 'glance',
+                'mode': 0644
+            },
+            {
+                'path': '/etc/glance',
+                'name': 'schema-image.json',
+                'from_remote': GLANCE_SCHEMA_IMAGE_JSON,
+                'user': 'glance',
+                'group': 'glance',
+                'mode': 0644
+            },
+            {
+                'path': '/etc/glance',
+                'name': 'property-protections.conf',
+                'from_remote': GLANCE_PROPERTY,
                 'user': 'glance',
                 'group': 'glance',
                 'mode': 0644
@@ -118,10 +162,10 @@ BUILD_DATA = {
                 'help': 'Start and stop glance on boot',
                 'init_path': '/etc/init.d',
                 'bin_path': BIN_PATH,
-                'name': 'glance-registry',
+                'name': 'glance-api',
                 'chuid': 'glance',
                 'chdir': '/var/lib/glance',
-                'program': 'glance-registry'
+                'program': 'glance-api'
             }
         ]
     }
