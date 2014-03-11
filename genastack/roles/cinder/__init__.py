@@ -140,13 +140,18 @@ BUILD_DATA = {
         'pip_install': {
             'pip_bin': '%s/pip' % BIN_PATH,
             'pip_packages': [
-                'git+%s@%s' % (CINDER_PROJECT, BRANCH)
+                'git+%s@%s' % (CINDER_PROJECT, BRANCH),
+                'pywbem'
             ],
         },
         'packages': {
             'apt': [
                 'lvm2',
-                'tgt'
+                'tgt',
+                'open-iscsi',
+                'qemu-utils',
+                'sysfsutils',
+                'nfs-common'
             ]
         }
     }

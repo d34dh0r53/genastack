@@ -158,12 +158,15 @@ BUILD_DATA = {
         'pip_install': {
             'pip_bin': '%s/pip' % BIN_PATH,
             'pip_packages': [
-                'git+%s@%s' % (GLANCE_PROJECT, BRANCH)
+                'git+%s@%s' % (GLANCE_PROJECT, BRANCH),
+                'python-swiftclient',
+                'warlock'
             ],
         },
         'packages': {
             'apt': [
-                'sqlite3'
+                'sqlite3',
+                'cronie'
             ]
         }
     }

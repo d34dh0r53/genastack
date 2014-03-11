@@ -87,7 +87,10 @@ BUILD_DATA = {
                 'pep8',
                 'flake8',
                 'hacking',
-                'iso8601'
+                'iso8601',
+                'lockfile',
+                'amqplib',
+                'kombu'
             ],
         },
         'packages': {
