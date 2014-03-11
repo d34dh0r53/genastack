@@ -32,8 +32,8 @@ GLANCE_PROPERTY = '%s/property-protections.conf.sample' % URL_PATH
 
 
 BUILD_DATA = {
-    'glance-api': {
-        'help': 'Install Glance from upstream on Branch "%s"' % BRANCH,
+    'glance_api': {
+        'help': 'Install Glance-API from upstream Branch "%s"' % BRANCH,
         'required': [
             'python',
             'glance_client'

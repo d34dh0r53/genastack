@@ -28,8 +28,8 @@ GLANCE_POLICY_JSON = '%s/policy.json' % URL_PATH
 
 
 BUILD_DATA = {
-    'glance-registry': {
-        'help': 'Install Glance from upstream on Branch "%s"' % BRANCH,
+    'glance_registry': {
+        'help': 'Install Glance-Registry from upstream Branch "%s"' % BRANCH,
         'required': [
             'python',
             'glance_client'
