@@ -94,6 +94,8 @@ BUILD_DATA = {
         'apt_packages': [
             'zlib1g-dev',
             'libdb-dev',
+            'libxml2',
+            'libxml2-dev',
             'libncurses5-dev',
             'libbz2-dev',
             'liblz-dev',
@@ -109,10 +111,15 @@ BUILD_DATA = {
             'libc6-dev',
             'libsqlite3-dev',
             'libxslt1-dev',
+            'libxslt1.1',
             'tk-dev',
             'libmysqlclient-dev',
             'postgresql',
-            'postgresql-client'
+            'postgresql-client',
+            'libxft-dev',
+            'tcl8.5-dev',
+            'tk8.5-dev',
+            'libffi-dev'
         ]
     }
 }

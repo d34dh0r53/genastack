@@ -25,9 +25,6 @@ BUILD_DATA = {
         'help': 'Install Glance-Client from upstream, Branch "%s"' % BRANCH,
         'pip_install': [
             'git+%s@%s' % (CLIENT, BRANCH)
-        ],
-        'apt_packages': [
-            'libffi-dev'
         ]
     }
 }

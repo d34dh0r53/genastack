@@ -135,16 +135,15 @@ class EngineRunner(object):
                 f.write(contents)
         self.__execute_command(commands=['ldconfig'])
 
-    def _pip_install(self, kwargs):
+    def _pip_install(self, args):
         """Install Python Packages with pip.
 
         :param kwargs: ``dict``
         """
-        pip_packages = kwargs['pip_packages']
         env = os.environ.copy()
         bin_path = utils.return_rax_dir(path='bin')
         env['path'] = '%s:%s' % (bin_path, env.get('path', '/usr/local/bin'))
-        pip_install_all = ['pip install %s' % p for p in pip_packages]
+        pip_install_all = ['pip install %s' % p for p in args]
         self.__execute_command(commands=pip_install_all, env=env)
 
     def _init_script(self, args):
