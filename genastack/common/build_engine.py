@@ -415,7 +415,6 @@ class EngineRunner(object):
         LOG.info('Installing Packages [ %s ]', packages)
         self.__execute_command(commands=commands)
 
-
     def get_required(self, args, pop):
         """Populate all required roles in the required_roles ``list``.
 

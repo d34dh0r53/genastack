@@ -43,12 +43,6 @@ BUILD_DATA = {
         'required': [
             'base'
         ],
-        'libs': [
-            'openssl',
-            'berkeley_db',
-            'postgres_connector',
-            'mysql_connector'
-        ],
         'remote_script': [
             {
                 'help': 'Install pip.',
@@ -93,7 +87,9 @@ BUILD_DATA = {
             'iso8601',
             'lockfile',
             'amqplib',
-            'kombu'
+            'kombu',
+            'psycopg2',
+            'sqlalchemy'
         ],
         'apt_packages': [
             'zlib1g-dev',
@@ -113,7 +109,10 @@ BUILD_DATA = {
             'libc6-dev',
             'libsqlite3-dev',
             'libxslt1-dev',
-            'tk-dev'
+            'tk-dev',
+            'libmysqlclient-dev',
+            'postgresql',
+            'postgresql-client'
         ]
     }
 }
