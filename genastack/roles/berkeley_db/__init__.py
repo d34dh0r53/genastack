@@ -46,6 +46,7 @@ BUILD_DATA = {
             }
         ],
         'apt_packages': [
+            'libxft-dev',
             'tcl8.5-dev',
             'tk8.5-dev'
         ]
