@@ -13,7 +13,7 @@ BUILD_DATA = {
     'keystone_all': {
         'help': 'Install all of Keystone from upstream',
         'required': [
-            'keystone_client'
+            'keystone_client',
             'keystone_api',
         ]
     }

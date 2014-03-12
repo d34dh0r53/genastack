@@ -7,6 +7,7 @@
 # details (see GNU General Public License).
 # http://www.gnu.org/licenses/gpl.html
 # =============================================================================
+import collections
 import grp
 import logging
 import os
@@ -28,6 +29,9 @@ class EngineRunner(object):
 
     def __init__(self, args):
         self.args = args
+        self.run_roles = []
+        self.job_dict = collections.defaultdict(list)
+
 
     @staticmethod
     def __set_perms(inode, kwargs):
@@ -137,62 +141,65 @@ class EngineRunner(object):
         :param kwargs: ``dict``
         """
         pip_packages = kwargs['pip_packages']
-        pip_bin = kwargs['pip_bin']
-        pip_install_all = ['%s install %s' % (pip_bin, p) for p in pip_packages]
-        self.__execute_command(commands=pip_install_all)
+        env = os.environ.copy()
+        bin_path = utils.return_rax_dir(path='bin')
+        env['path'] = '%s:%s' % (bin_path, env.get('path', '/usr/local/bin'))
+        pip_install_all = ['pip install %s' % p for p in pip_packages]
+        self.__execute_command(commands=pip_install_all, env=env)
 
-    def _init_script(self, kwargs):
+    def _init_script(self, args):
         """Place a generic init script on the system.
 
-        :param kwargs: ``dict``
+        :param args: ``list``
         """
-        bin_path = kwargs['bin_path']
-        name = kwargs['program']
-        full_path = os.path.join(bin_path, name)
+        for script in args:
+            bin_path = script['bin_path']
+            name = script['program']
+            full_path = os.path.join(bin_path, name)
+            execute = ' '.join([script['bin'], script.get('options', '')])
+            script['bin'] = full_path
+            script['exec'] = execute
+            script['pid_file'] = '/var/run/%s.pid' % name
 
-        kwargs['bin'] = full_path
-        kwargs['exec'] = ' '.join([kwargs['bin'], kwargs.get('options', '')])
-        kwargs['pid_file'] = '/var/run/%s.pid' % name
+            ssd = [
+                '--start',
+                '--background',
+                '--make-pidfile',
+                '--pidfile %(pid_file)s'
+            ]
 
-        ssd = [
-            '--start',
-            '--background',
-            '--make-pidfile',
-            '--pidfile %(pid_file)s'
-        ]
+            if 'chuid' in script:
+                ssd.append('--chuid %s' % script['chuid'])
 
-        if 'chuid' in kwargs:
-            ssd.append('--chuid %s' % kwargs['chuid'])
+            if 'chdir' in script:
+                ssd.append('--chdir %s' % script['chdir'])
 
-        if 'chdir' in kwargs:
-            ssd.append('--chdir %s' % kwargs['chdir'])
+            ssd.append('--exec %(exec)s')
+            script['start_stop_daemon'] = ' '.join(ssd) % script
 
-        ssd.append('--exec %(exec)s')
-        kwargs['start_stop_daemon'] = ' '.join(ssd) % kwargs
+            script = basic_init.INIT_SCRIPT % script
+            file_create = {
+                'path': script['init_path'],
+                'name': script['name'],
+                'contents': script,
+                'group': 'root',
+                'user': 'root',
+                'mode': 0755
+            }
 
-        script = basic_init.INIT_SCRIPT % kwargs
-        file_create = {
-            'path': kwargs['init_path'],
-            'name': kwargs['name'],
-            'contents': script,
-            'group': 'root',
-            'user': 'root',
-            'mode': 0755
-        }
+            self._file_create(args=[file_create])
 
-        self._file_create(args=[file_create])
+            distro = self.__distro_check()
+            if distro == 'apt_packages':
+                command = ['update-rc.d %(name)s defaults' % script]
+            elif distro == 'yum_packages':
+                #TODO(kevin) Support RHEL
+                raise genastack.CantContinue('No RHEL Support at this time.')
 
-        debian_based, rhel_based = self.__distro_check()
-        if debian_based:
-            command = ['update-rc.d %(name)s defaults' % kwargs]
-        elif rhel_based:
-            #TODO(kevin) Support RHEL
-            raise genastack.CantContinue('No RHEL Support at this time.')
+            self.__execute_command(commands=command)
 
-        self.__execute_command(commands=command)
-
-    def _remote_script(self, kwargs):
-        """Execute a remote script on the local system.
+    def __script_run(self, kwargs):
+        """Run a script.
 
         :param kwargs: ``dict``
         """
@@ -205,10 +212,19 @@ class EngineRunner(object):
         command = '%s %s' % (interpreter, full_path)
         self.__execute_command(commands=[command])
 
-    def _build(self, kwargs):
-        """Install a package from source.
+    def _remote_script(self, args):
+        """Execute a remote script on the local system.
 
-        :param: kwargs: ``dict``
+        :param kwargs: ``dict``
+        """
+        for script in args:
+            if not self.__not_if_exists(check=script):
+                self.__script_run(kwargs=script)
+
+    def __compiler(self, kwargs):
+        """Install an application.
+
+        :param kwargs: ``dict``
         """
         get_sources = kwargs['get']
         work_path = self.__get(kwargs=get_sources)
@@ -236,6 +252,17 @@ class EngineRunner(object):
             self.__execute_command(commands=commands, env=environment)
         finally:
             os.chdir(cwd)
+
+    def _build(self, args):
+        """Confirm a package needs to be install, if so go to the compiler.
+
+        :param: args: ``list``
+        """
+
+        for build in args:
+            if self.__not_if_exists(check=build) is False:
+                self.__compiler(kwargs=build)
+
 
     def _group_create(self, args):
         """Create local file on the system.
@@ -338,6 +365,8 @@ class EngineRunner(object):
 
                 LOG.info('Created file [ %s ]', file_path)
                 self.__set_perms(inode=file_path, kwargs=file_create)
+            else:
+                LOG.info('File not created it exists [ %s ]', file_path)
 
     def _directories(self, args, mode_if=None):
         """Create local directories on the system.
@@ -357,83 +386,101 @@ class EngineRunner(object):
         """Return True or False for the detected distro."""
         distro = platform.linux_distribution()
         distro = [d.lower() for d in distro]
-        debian_based = any(['ubuntu' in distro, 'debian' in distro])
-        rhel_based = any(['centos' in distro, 'redhat' in distro])
-        return debian_based, rhel_based
+        if any(['ubuntu' in distro, 'debian' in distro]) is True:
+            return 'apt_packages'
+        elif any(['centos' in distro, 'redhat' in distro]) is True:
+            return 'yum_packages'
+        else:
+            raise genastack.CantContinue(
+                'Distro [ %s ] is unsupported.' % distro
+            )
 
-    def _packages(self, kwargs):
+    def _yum_packages(self, args):
+        #TODO(kevin) Support RHEL
+        raise genastack.CantContinue('No RHEL Support at this time.')
+
+    def _apt_packages(self, args):
         """Install operating system packages for the system.
 
         :param: kwargs: ``dict``
         """
-        debian_based, rhel_based = self.__distro_check()
-        if debian_based:
-            _packages = kwargs.get('apt')
-            packages = ' '.join(_packages)
-            apt_update = 'apt-get update'
-            apt_install = (
-                "apt-get -o Dpkg::Options:='--force-confold'"
-                " -o Dpkg::Options:='--force-confdef'"
-                " install -y %s" % packages
-            )
-            commands = [apt_update, apt_install]
-            LOG.info('Installing Packages [ %s ]', packages)
-            self.__execute_command(commands=commands)
-        elif rhel_based:
-            #TODO(kevin) Support RHEL
-            raise genastack.CantContinue('No RHEL Support at this time.')
+        packages = ' '.join(args)
+        apt_update = 'apt-get update'
+        apt_install = (
+            "apt-get -o Dpkg::Options:='--force-confold'"
+            " -o Dpkg::Options:='--force-confdef'"
+            " install -y %s" % packages
+        )
+        commands = [apt_update, apt_install]
+        LOG.info('Installing Packages [ %s ]', packages)
+        self.__execute_command(commands=commands)
+
+
+    def get_required(self, args, pop):
+        """Populate all required roles in the required_roles ``list``.
+
+        :param args: ``list``
+        """
+        for req in args:
+            if req in self.run_roles:
+                break
+
+            self.run_roles.append(req)
+            requirement = role_loader.RoleLoad(config_type=req).load_role()
+            if pop in requirement:
+                required = requirement.pop(pop)
+                self.get_required(args=required, pop=pop)
+            self.merge_init_items(items=requirement)
+
+    def merge_init_items(self, items):
+        """Build the job dict merging the dicts of other resources.
+
+        :param items: ``dict``
+        """
+        for k, v in items.iteritems():
+            if isinstance(v, list):
+                for i in v:
+                    self.job_dict[k].append(i)
+            else:
+                self.job_dict[k].append(v)
 
     def run(self, init_items):
-        """Run the method."""
+        """Run the method.
+
+        :param init_items: ``dict``
+        """
+        LOG.info('Understanding the scope of work')
+        self.merge_init_items(items=init_items)
 
         if 'required' in init_items:
-            libs_list = init_items.pop('required')
-            for requirement in libs_list:
-                _requirement = role_loader.RoleLoad(config_type=requirement)
-                requirement_init = _requirement.load_role()
-                self.run(init_items=requirement_init)
+            required_roles = init_items.pop('required')
+            self.get_required(args=required_roles, pop='required')
 
-        if 'group_create' in init_items:
-            self._group_create(args=init_items.pop('group_create'))
+        if 'libs' in self.job_dict:
+            libs_list = self.job_dict.pop('libs')
+            self.get_required(args=libs_list, pop='libs')
 
-        if 'user_create' in init_items:
-            self._user_create(args=init_items.pop('user_create'))
+        LOG.info('Installation Inforamtion: %s' % self.job_dict.pop('help'))
+        if self.args.get('print_only') is True:
+            return self.job_dict
 
-        if 'directories' in init_items:
-            self._directories(args=init_items.pop('directories'))
+        run_list = [
+            'group_create',
+            'user_create',
+            'directories',
+            'file_create',
+            self.__distro_check(),
+            'build',
+            'ldconfig',
+            'remote_script',
+            'pip_install',
+            'init_script'
+        ]
 
-        if 'file_create' in init_items:
-            self._file_create(args=init_items.pop('file_create'))
-
-        if 'packages' in init_items:
-            self._packages(kwargs=init_items.pop('packages'))
-
-        if 'libs' in init_items:
-            libs_list = init_items.pop('libs')
-            for lib in libs_list:
-                lib_init = role_loader.RoleLoad(config_type=lib).load_role()
-                build_kwargs = lib_init.pop('build')
-                if not self.__not_if_exists(check=build_kwargs):
-                    self._build(kwargs=build_kwargs)
-
-        if 'build' in init_items:
-            build_kwargs = init_items.pop('build')
-            if not self.__not_if_exists(check=build_kwargs):
-                self._build(kwargs=build_kwargs)
-
-        if 'ldconfig' in init_items:
-            self._ldconfig(args=init_items.pop('ldconfig'))
-
-        if 'remote_script' in init_items:
-            remote_script = init_items.pop('remote_script')
-            for script in remote_script:
-                if not self.__not_if_exists(check=script):
-                    self._remote_script(kwargs=script)
-
-        if 'pip_install' in init_items:
-            self._pip_install(kwargs=init_items.pop('pip_install'))
-
-        if 'init_script' in init_items:
-            init_scripts = init_items.pop('init_script')
-            for script in init_scripts:
-                self._init_script(kwargs=script)
+        for run in run_list:
+            if run in self.job_dict:
+                run_command = '_%s' % run
+                if hasattr(self, run_command):
+                    action = getattr(self, run_command)
+                    action(args=self.job_dict.pop(run))
+        return 'success'

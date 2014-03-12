@@ -13,7 +13,7 @@ BUILD_DATA = {
     'glance_all': {
         'help': 'Install all of Glance from upstream',
         'required': [
-            'glance_client'
+            'glance_client',
             'glance_api',
             'glance_registry'
         ]

@@ -7,10 +7,10 @@
 # details (see GNU General Public License).
 # http://www.gnu.org/licenses/gpl.html
 # =============================================================================
-from genastack import roles
+from genastack.common import utils
 
 
-BIN_PATH = roles.return_rax_dir('bin')
+BIN_PATH = utils.return_rax_dir('bin')
 
 
 BRANCH = '0.12.0'
@@ -23,17 +23,11 @@ CLIENT = '%s/python-glanceclient.git' % PROJECT_URL
 BUILD_DATA = {
     'glance_client': {
         'help': 'Install Glance-Client from upstream, Branch "%s"' % BRANCH,
-        'pip_install': {
-            'pip_bin': '%s/pip' % BIN_PATH,
-            'pip_packages': [
-                'git+%s@%s' % (CLIENT, BRANCH)
-            ],
-        },
-        'packages': {
-            'apt': [
-                'libffi-dev'
-            ]
-        }
-
+        'pip_install': [
+            'git+%s@%s' % (CLIENT, BRANCH)
+        ],
+        'apt_packages': [
+            'libffi-dev'
+        ]
     }
 }

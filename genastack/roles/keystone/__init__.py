@@ -7,10 +7,10 @@
 # details (see GNU General Public License).
 # http://www.gnu.org/licenses/gpl.html
 # =============================================================================
-from genastack import roles
+from genastack.common import utils
 
 
-BIN_PATH = roles.return_rax_dir('bin')
+BIN_PATH = utils.return_rax_dir('bin')
 
 
 BRANCH = 'stable/havana'
@@ -110,21 +110,16 @@ BUILD_DATA = {
                 'mode': 0644
             }
         ],
-        'pip_install': {
-            'pip_bin': '%s/pip' % BIN_PATH,
-            'pip_packages': [
-                'git+%s@%s' % (KEYSTONE_PROJECT, BRANCH)
-            ],
-        },
-        'packages': {
-            'apt': [
-                'libsasl2-dev'
-                'debhelper',
-                'dh-apparmor',
-                'docutils-common',
-                'libjs-sphinxdoc',
-                'libjs-underscore'
-            ]
-        }
+        'pip_install': [
+            'git+%s@%s' % (KEYSTONE_PROJECT, BRANCH)
+        ],
+        'apt_packages': [
+            'libsasl2-dev',
+            'debhelper',
+            'dh-apparmor',
+            'docutils-common',
+            'libjs-sphinxdoc',
+            'libjs-underscore'
+        ]
     }
 }

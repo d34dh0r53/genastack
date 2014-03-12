@@ -9,13 +9,13 @@
 # =============================================================================
 import os
 
-from genastack import roles
+from genastack.common import utils
 
 
-TEMP_PATH = roles.return_temp_dir()
-WORK_PATH = roles.return_rax_dir()
-LIBS_PATH = roles.return_rax_dir(path='lib')
-INCLUDE_PATH = roles.return_rax_dir(path='include')
+TEMP_PATH = utils.return_temp_dir()
+WORK_PATH = utils.return_rax_dir()
+LIBS_PATH = utils.return_rax_dir(path='lib')
+INCLUDE_PATH = utils.return_rax_dir(path='include')
 
 
 _URL = 'http://ftp.postgresql.org/pub/source/v9.2.7'
@@ -31,31 +31,35 @@ INSTALL_COMMANDS = [
 ]
 
 
+EXPORTS = [
+    'CFLAGS=-I%s -I/usr/include/x86_64-linux-gnu' % INCLUDE_PATH,
+    'LDFLAGS=-L%s -L/usr/lib/x86_64-linux-gnu' % LIBS_PATH,
+    'LD_RUN_PATH=%s' % LIBS_PATH
+]
+
+
 BUILD_DATA = {
     'postgres_connector': {
         'help': 'Install upstream postgresql_connector.',
-        'build': {
-            'get': {
-                'url': POSTGRESQL_URL,
-                'path': TEMP_PATH,
-                'name': NAME,
-                'md5sum': 'a61a63fc08b0b27a43b6ca325f49ab4b',
-                'uncompress': True
+        'build': [
+            {
+                'get': {
+                    'url': POSTGRESQL_URL,
+                    'path': TEMP_PATH,
+                    'name': NAME,
+                    'md5sum': 'a61a63fc08b0b27a43b6ca325f49ab4b',
+                    'uncompress': True
+                },
+                'export': EXPORTS,
+                'not_if_exists': os.path.join(LIBS_PATH, 'postgresql'),
+                'build_commands': INSTALL_COMMANDS,
             },
-            'export': [
-                'CFLAGS=-I%s -I/usr/include/x86_64-linux-gnu' % INCLUDE_PATH,
-                'LDFLAGS=-L%s -L/usr/lib/x86_64-linux-gnu' % LIBS_PATH,
-                'LD_RUN_PATH=%s' % LIBS_PATH
-            ],
-            'not_if_exists': os.path.join(LIBS_PATH, 'postgresql'),
-            'build_commands': INSTALL_COMMANDS,
-        },
-        'packages': {
-            'apt': [
-                'bison',
-                'flex'
-            ]
-        }
+
+        ],
+        'apt_packages': [
+            'bison',
+            'flex'
+        ]
     }
 }
 

@@ -11,12 +11,38 @@ import errno
 import hashlib
 import httplib
 import os
+import tempfile
 import logging
 import urlparse
 
 import genastack
 
 LOG = logging.getLogger('genastack-common')
+
+
+RAX_BASE = 'openstack'
+
+
+def return_rax_dir(path=None):
+    """Return python installation path.
+
+    :return: ``str``
+    """
+    if path is None:
+        return os.path.join('/opt', RAX_BASE)
+    else:
+        return os.path.join('/opt', RAX_BASE, path)
+
+
+def return_temp_dir():
+    """Return a securely created temp directory.
+
+    :return: ``str``
+    """
+    temp = tempfile.gettempdir()
+    rax = os.path.join(temp, '%s_build' % RAX_BASE)
+    mkdir_p(rax)
+    return tempfile.mkdtemp(prefix='build_temp_', dir=rax)
 
 
 class OpenConnection(object):

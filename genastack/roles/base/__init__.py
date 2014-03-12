@@ -8,15 +8,15 @@
 # http://www.gnu.org/licenses/gpl.html
 # =============================================================================
 
-from genastack import roles
+from genastack.common import utils
 
 
-TEMP_PATH = roles.return_temp_dir()
-WORK_PATH = roles.return_rax_dir()
-LIBS_PATH = roles.return_rax_dir(path='lib')
-LIBS_PATH = roles.return_rax_dir(path='libexec')
-BIN_PATH = roles.return_rax_dir(path='bin')
-SBIN_PATH = roles.return_rax_dir(path='sbin')
+TEMP_PATH = utils.return_temp_dir()
+WORK_PATH = utils.return_rax_dir()
+LIBS_PATH = utils.return_rax_dir(path='lib')
+LIBEXEC_PATH = utils.return_rax_dir(path='libexec')
+BIN_PATH = utils.return_rax_dir(path='bin')
+SBIN_PATH = utils.return_rax_dir(path='sbin')
 
 
 BZIP_URL = 'http://www.bzip.org/1.0.6/bzip2-1.0.6.tar.gz'
@@ -24,12 +24,12 @@ BZIP_URL = 'http://www.bzip.org/1.0.6/bzip2-1.0.6.tar.gz'
 
 RAX_BIN_SCRIPT = """
 #!/usr/bin/env bash
-RAX_PATH="/opt/rackspace/bin"
+RAX_PATH="%s:%s:%s"
 
 if ! echo ${PATH} | /bin/grep -q ${RAX_PATH} ; then
 PATH=${PATH}:${RAX_PATH}
 fi
-"""
+""" % (BIN_PATH, SBIN_PATH, LIBEXEC_PATH)
 
 
 INSTALL_COMMANDS = [
@@ -41,23 +41,6 @@ INSTALL_COMMANDS = [
 BUILD_DATA = {
     'base': {
         'help': 'Install base packages.',
-        'packages': {
-            'apt': [
-                'libmysqlclient-dev',
-                'gettext',
-                'help2man',
-                'html2text',
-                'libxml2-dev',
-                'intltool-debian',
-                'git-core',
-                'curl',
-                'openssl',
-                'build-essential',
-                'bridge-utils',
-                'cgroup-lite',
-                'gawk'
-            ]
-        },
         'directories': [
             {
                 'path': '/etc/profile.d',
@@ -67,6 +50,12 @@ BUILD_DATA = {
             },
             {
                 'path': SBIN_PATH,
+                'user': 'root',
+                'group': 'root',
+                'mode': 0755
+            },
+            {
+                'path': LIBEXEC_PATH,
                 'user': 'root',
                 'group': 'root',
                 'mode': 0755
@@ -99,6 +88,21 @@ BUILD_DATA = {
                 'group': 'root',
                 'mode': 0755
             }
+        ],
+        'apt_packages': [
+            'libmysqlclient-dev',
+            'gettext',
+            'help2man',
+            'html2text',
+            'libxml2-dev',
+            'intltool-debian',
+            'git-core',
+            'curl',
+            'openssl',
+            'build-essential',
+            'bridge-utils',
+            'cgroup-lite',
+            'gawk'
         ]
     }
 }

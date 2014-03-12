@@ -34,11 +34,9 @@ def executable():
             raise SystemExit('No Method Found')
         else:
             build_data = role_loader.RoleLoad(config_type=method).load_role()
-            if args.get('print_only') is True:
-                print json.dumps(build_data, indent=2)
-            else:
-                engine = build_engine.EngineRunner(args=args)
-                engine.run(init_items=build_data)
+            engine = build_engine.EngineRunner(args=args)
+            run_results = engine.run(init_items=build_data)
+            print json.dumps(run_results, indent=2)
 
 
 if __name__ == '__main__':

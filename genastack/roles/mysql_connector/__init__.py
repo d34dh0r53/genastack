@@ -9,12 +9,12 @@
 # =============================================================================
 import os
 
-from genastack import roles
+from genastack.common import utils
 
 
-TEMP_PATH = roles.return_temp_dir()
-WORK_PATH = roles.return_rax_dir()
-LIBS_PATH = roles.return_rax_dir(path='lib')
+TEMP_PATH = utils.return_temp_dir()
+WORK_PATH = utils.return_rax_dir()
+LIBS_PATH = utils.return_rax_dir(path='lib')
 
 
 _URL = 'http://dev.mysql.com/get/Downloads/Connector-C'
@@ -35,25 +35,25 @@ INSTALL_COMMANDS = [
 BUILD_DATA = {
     'mysql_connector': {
         'help': 'Install upstream mysql_connector_c.',
-        'build': {
-            'get': {
-                'url': MYSQL_URL,
-                'path': TEMP_PATH,
-                'name': NAME,
-                'md5sum': '490e2dd5d4f86a20a07ba048d49f36b2',
-                'uncompress': True
-            },
-            'export': [
-                'LD_RUN_PATH=%s' % LIBS_PATH
-            ],
-            'not_if_exists': os.path.join(LIBS_PATH, 'libmysqlclient.so'),
-            'build_commands': INSTALL_COMMANDS,
-        },
-        'packages': {
-            'apt': [
-                'cmake'
-            ]
-        },
+        'build': [
+            {
+                'get': {
+                    'url': MYSQL_URL,
+                    'path': TEMP_PATH,
+                    'name': NAME,
+                    'md5sum': '490e2dd5d4f86a20a07ba048d49f36b2',
+                    'uncompress': True
+                },
+                'export': [
+                    'LD_RUN_PATH=%s' % LIBS_PATH
+                ],
+                'not_if_exists': os.path.join(LIBS_PATH, 'libmysqlclient.so'),
+                'build_commands': INSTALL_COMMANDS,
+            }
+        ],
+        'apt_packages': [
+            'cmake'
+        ]
     }
 }
 

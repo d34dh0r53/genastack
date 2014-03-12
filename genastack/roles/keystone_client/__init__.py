@@ -7,10 +7,10 @@
 # details (see GNU General Public License).
 # http://www.gnu.org/licenses/gpl.html
 # =============================================================================
-from genastack import roles
+from genastack.common import utils
 
 
-BIN_PATH = roles.return_rax_dir('bin')
+BIN_PATH = utils.return_rax_dir('bin')
 
 
 BRANCH = '0.6.0'
@@ -23,11 +23,8 @@ CLIENT = '%s/python-keystoneclient.git' % PROJECT_URL
 BUILD_DATA = {
     'keystone_client': {
         'help': 'Install Keystone client from upstream, Branch "%s"' % BRANCH,
-        'pip_install': {
-            'pip_bin': '%s/pip' % BIN_PATH,
-            'pip_packages': [
-                'git+%s@%s' % (CLIENT, BRANCH)
-            ],
-        }
+        'pip_install': [
+            'git+%s@%s' % (CLIENT, BRANCH)
+        ]
     }
 }

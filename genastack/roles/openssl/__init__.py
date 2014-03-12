@@ -7,12 +7,12 @@
 # details (see GNU General Public License).
 # http://www.gnu.org/licenses/gpl.html
 # =============================================================================
-from genastack import roles
+from genastack.common import utils
 
 
-TEMP_PATH = roles.return_temp_dir()
-WORK_PATH = roles.return_rax_dir()
-OPENSSL_PATH = roles.return_rax_dir(path='openssl')
+TEMP_PATH = utils.return_temp_dir()
+WORK_PATH = utils.return_rax_dir()
+OPENSSL_PATH = utils.return_rax_dir(path='openssl')
 
 
 OPEN_SSL_URL = 'http://www.openssl.org/source/openssl-1.0.1f.tar.gz'
@@ -29,16 +29,18 @@ INSTALL_COMMANDS = [
 BUILD_DATA = {
     'openssl': {
         'help': 'Install upstream openssl.',
-        'build': {
-            'get': {
-                'url': OPEN_SSL_URL,
-                'path': TEMP_PATH,
-                'name': 'openssl-1.0.1f.tgz',
-                'md5sum': 'f26b09c028a0541cab33da697d522b25',
-                'uncompress': True
-            },
-            'not_if_exists': OPENSSL_PATH,
-            'build_commands': INSTALL_COMMANDS,
-        }
+        'build': [
+            {
+                'get': {
+                    'url': OPEN_SSL_URL,
+                    'path': TEMP_PATH,
+                    'name': 'openssl-1.0.1f.tgz',
+                    'md5sum': 'f26b09c028a0541cab33da697d522b25',
+                    'uncompress': True
+                },
+                'not_if_exists': OPENSSL_PATH,
+                'build_commands': INSTALL_COMMANDS,
+            }
+        ]
     }
 }

@@ -7,10 +7,10 @@
 # details (see GNU General Public License).
 # http://www.gnu.org/licenses/gpl.html
 # =============================================================================
-from genastack import roles
+from genastack.common import utils
 
 
-BIN_PATH = roles.return_rax_dir('bin')
+BIN_PATH = utils.return_rax_dir('bin')
 
 
 BUILD_DATA = {
@@ -18,7 +18,7 @@ BUILD_DATA = {
         'help': 'Install Glance-API from upstream',
         'required': [
             'python',
-            'glance'
+            'glance',
             'glance_client'
         ],
         'init_script': [
