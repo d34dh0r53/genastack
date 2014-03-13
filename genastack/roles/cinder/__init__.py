@@ -139,7 +139,7 @@ BUILD_DATA = {
         ],
         'pip_install': [
             'git+%s@%s' % (CINDER_PROJECT, BRANCH),
-            'pywbem'
+            '--allow-all-external pywbem'
         ],
         'apt_packages': [
             'lvm2',
