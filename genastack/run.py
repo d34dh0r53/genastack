@@ -10,10 +10,10 @@
 import sys
 import json
 
-from genastack.common import logger
 from genastack.arguments import parser
-from genastack.common import role_loader
 from genastack.common import build_engine
+from genastack.common import logger
+from genastack.common import role_loader
 from genastack.common import utils
 
 

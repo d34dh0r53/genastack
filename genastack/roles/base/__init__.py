@@ -49,37 +49,37 @@ BUILD_DATA = {
                 'path': '/etc/profile.d',
                 'user': 'root',
                 'group': 'root',
-                'mode': 0755
+                'mode': '0755'
             },
             {
                 'path': SBIN_PATH,
                 'user': 'root',
                 'group': 'root',
-                'mode': 0755
+                'mode': '0755'
             },
             {
                 'path': LIBEXEC_PATH,
                 'user': 'root',
                 'group': 'root',
-                'mode': 0755
+                'mode': '0755'
             },
             {
                 'path': BIN_PATH,
                 'user': 'root',
                 'group': 'root',
-                'mode': 0755
+                'mode': '0755'
             },
             {
                 'path': LIBS_PATH,
                 'user': 'root',
                 'group': 'root',
-                'mode': 0755
+                'mode': '0755'
             },
             {
                 'path': WORK_PATH,
                 'user': 'root',
                 'group': 'root',
-                'mode': 0755
+                'mode': '0755'
             }
         ],
         'file_create': [
@@ -89,7 +89,7 @@ BUILD_DATA = {
                 'contents': RAX_BIN_SCRIPT,
                 'user': 'root',
                 'group': 'root',
-                'mode': 0755
+                'mode': '0755'
             }
         ],
         'apt_packages': [

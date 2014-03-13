@@ -40,37 +40,37 @@ BUILD_DATA = {
                 'path': '/var/log/cinder',
                 'user': 'cinder',
                 'group': 'cinder',
-                'mode': 0755
+                'mode': '0755'
             },
             {
                 'path': '/var/lib/cinder',
                 'user': 'cinder',
                 'group': 'cinder',
-                'mode': 0755
+                'mode': '0755'
             },
             {
                 'path': '/etc/cinder/rootwrap.d',
                 'user': 'cinder',
                 'group': 'cinder',
-                'mode': 0755
+                'mode': '0755'
             },
             {
                 'path': '/var/lock/cinder',
                 'user': 'cinder',
                 'group': 'root',
-                'mode': 0755
+                'mode': '0755'
             },
             {
                 'path': '/var/run/cinder',
                 'user': 'cinder',
                 'group': 'cinder',
-                'mode': 0755
+                'mode': '0755'
             },
             {
                 'path': '/etc/cinder',
                 'user': 'cinder',
                 'group': 'cinder',
-                'mode': 0755
+                'mode': '0755'
             }
         ],
         'group_create': [
@@ -94,7 +94,7 @@ BUILD_DATA = {
                 'from_remote': CINDER_API_PASTE,
                 'user': 'cinder',
                 'group': 'cinder',
-                'mode': 0644
+                'mode': '0644'
             },
             {
                 'path': '/etc/cinder',
@@ -102,7 +102,7 @@ BUILD_DATA = {
                 'from_remote': CINDER_CONF,
                 'user': 'cinder',
                 'group': 'cinder',
-                'mode': 0644
+                'mode': '0644'
             },
             {
                 'path': '/etc/cinder',
@@ -110,7 +110,7 @@ BUILD_DATA = {
                 'from_remote': CINDER_LOGGING_CONF,
                 'user': 'cinder',
                 'group': 'cinder',
-                'mode': 0644
+                'mode': '0644'
             },
             {
                 'path': '/etc/cinder',
@@ -118,7 +118,7 @@ BUILD_DATA = {
                 'from_remote': CINDER_POLICY_JSON,
                 'user': 'cinder',
                 'group': 'cinder',
-                'mode': 0644
+                'mode': '0644'
             },
             {
                 'path': '/etc/cinder',
@@ -126,7 +126,7 @@ BUILD_DATA = {
                 'from_remote': CINDER_ROOTWRAP_CONF,
                 'user': 'cinder',
                 'group': 'cinder',
-                'mode': 0644
+                'mode': '0644'
             },
             {
                 'path': '/etc/cinder',
@@ -134,7 +134,7 @@ BUILD_DATA = {
                 'from_remote': CINDER_ROOTWRAP_VOLUME,
                 'user': 'cinder',
                 'group': 'cinder',
-                'mode': 0644
+                'mode': '0644'
             }
         ],
         'pip_install': [

@@ -39,25 +39,25 @@ BUILD_DATA = {
                 'path': '/var/log/keystone',
                 'user': 'keystone',
                 'group': 'keystone',
-                'mode': 0755
+                'mode': '0755'
             },
             {
                 'path': '/var/lib/keystone',
                 'user': 'keystone',
                 'group': 'keystone',
-                'mode': 0755
+                'mode': '0755'
             },
             {
                 'path': '/etc/keystone',
                 'user': 'keystone',
                 'group': 'keystone',
-                'mode': 0755
+                'mode': '0755'
             },
             {
                 'path': '/etc/keystone/ssl',
                 'user': 'keystone',
                 'group': 'keystone',
-                'mode': 0755
+                'mode': '0755'
             }
         ],
         'group_create': [
@@ -81,7 +81,7 @@ BUILD_DATA = {
                 'from_remote': KEYSTONE_CONF,
                 'user': 'keystone',
                 'group': 'keystone',
-                'mode': 0644
+                'mode': '0644'
             },
             {
                 'path': '/etc/keystone',
@@ -89,7 +89,7 @@ BUILD_DATA = {
                 'from_remote': KEYSTONE_PASTE,
                 'user': 'keystone',
                 'group': 'keystone',
-                'mode': 0644
+                'mode': '0644'
             },
             {
                 'path': '/etc/keystone',
@@ -97,7 +97,7 @@ BUILD_DATA = {
                 'from_remote': KEYSTONE_LOGGING,
                 'user': 'keystone',
                 'group': 'keystone',
-                'mode': 0644
+                'mode': '0644'
             },
             {
                 'path': '/etc/keystone',
@@ -105,7 +105,7 @@ BUILD_DATA = {
                 'from_remote': KEYSTONE_POLICY_JSON,
                 'user': 'keystone',
                 'group': 'keystone',
-                'mode': 0644
+                'mode': '0644'
             },
             {
                 'path': '/etc/keystone',
@@ -113,7 +113,7 @@ BUILD_DATA = {
                 'from_remote': KEYSTONE_POLICY_JSON_V3API,
                 'user': 'keystone',
                 'group': 'keystone',
-                'mode': 0644
+                'mode': '0644'
             }
         ],
         'pip_install': [

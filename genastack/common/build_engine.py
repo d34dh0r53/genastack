@@ -17,9 +17,10 @@ import subprocess
 import tarfile
 
 import genastack
-from genastack.common import utils
-from genastack.common import role_loader
 from genastack.common import basic_init
+from genastack.common import role_loader
+from genastack.common import utils
+
 
 LOG = logging.getLogger('genastack-engine')
 
@@ -32,7 +33,6 @@ class EngineRunner(object):
         self.run_roles = []
         self.install_db = None
         self.job_dict = collections.defaultdict(list)
-
 
     @staticmethod
     def __set_perms(inode, kwargs):
@@ -49,9 +49,9 @@ class EngineRunner(object):
         _group = kwargs.get('group', 'root')
         group = grp.getgrnam(_group).gr_gid
 
-        mode = kwargs.get('mode', 0644)
+        mode = utils.octal_converter(kwargs.get('mode', '0644'))
         os.chown(inode, user, group)
-        os.chmod(inode, int(mode))
+        os.chmod(inode, mode)
         LOG.info(
             'Permissions Set [ %s ] user=%s, group=%s, mode=%s',
             inode, user, group, mode
@@ -180,7 +180,7 @@ class EngineRunner(object):
                 'contents': basic_init.INIT_SCRIPT % script,
                 'group': 'root',
                 'user': 'root',
-                'mode': 0755
+                'mode': utils.octal_converter('0755')
             }
 
             self._file_create(args=[file_create])
@@ -349,7 +349,11 @@ class EngineRunner(object):
             name = file_create['name']
             file_path = os.path.join(path, name)
             if not os.path.exists(file_path):
-                self._directories(args=[file_create], mode_if=0755)
+                self._directories(
+                    args=[file_create],
+                    mode_if=utils.octal_converter('0755')
+                )
+
                 if 'from_remote' in file_create:
                     file_create['url'] = file_create['from_remote']
                     self.__get(kwargs=file_create)
@@ -377,7 +381,7 @@ class EngineRunner(object):
                 if mode_if is not None:
                     directory['mode'] = mode_if
                 elif 'mode' not in directory:
-                    directory['mode'] = 0755
+                    directory['mode'] = utils.octal_converter('0755')
 
                 self.__set_perms(inode=path, kwargs=directory)
 

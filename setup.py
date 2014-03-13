@@ -8,8 +8,9 @@
 # details (see GNU General Public License).
 # http://www.gnu.org/licenses/gpl.html
 # =============================================================================
-import setuptools
 import sys
+
+import setuptools
 
 from genastack import info
 

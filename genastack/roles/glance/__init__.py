@@ -44,19 +44,19 @@ BUILD_DATA = {
                 'path': '/var/log/glance',
                 'user': 'glance',
                 'group': 'glance',
-                'mode': 0755
+                'mode': '0755'
             },
             {
                 'path': '/var/lib/glance',
                 'user': 'glance',
                 'group': 'glance',
-                'mode': 0755
+                'mode': '0755'
             },
             {
                 'path': '/etc/glance',
                 'user': 'glance',
                 'group': 'glance',
-                'mode': 0755
+                'mode': '0755'
             }
         ],
         'group_create': [
@@ -80,7 +80,7 @@ BUILD_DATA = {
                 'from_remote': GLANCE_API_PASTE,
                 'user': 'glance',
                 'group': 'glance',
-                'mode': 0644
+                'mode': '0644'
             },
             {
                 'path': '/etc/glance',
@@ -88,7 +88,7 @@ BUILD_DATA = {
                 'from_remote': GLANCE_API_CONF,
                 'user': 'glance',
                 'group': 'glance',
-                'mode': 0644
+                'mode': '0644'
             },
             {
                 'path': '/etc/glance',
@@ -96,7 +96,7 @@ BUILD_DATA = {
                 'from_remote': GLANCE_SCRUBBER_CONF,
                 'user': 'glance',
                 'group': 'glance',
-                'mode': 0644
+                'mode': '0644'
             },
             {
                 'path': '/etc/glance',
@@ -104,7 +104,7 @@ BUILD_DATA = {
                 'from_remote': GLANCE_CACHE_CONF,
                 'user': 'glance',
                 'group': 'glance',
-                'mode': 0644
+                'mode': '0644'
             },
             {
                 'path': '/etc/glance',
@@ -112,7 +112,7 @@ BUILD_DATA = {
                 'from_remote': GLANCE_REGISTRY_PASTE,
                 'user': 'glance',
                 'group': 'glance',
-                'mode': 0644
+                'mode': '0644'
             },
             {
                 'path': '/etc/glance',
@@ -120,7 +120,7 @@ BUILD_DATA = {
                 'from_remote': GLANCE_REGISTRY_CONF,
                 'user': 'glance',
                 'group': 'glance',
-                'mode': 0644
+                'mode': '0644'
             },
             {
                 'path': '/etc/glance',
@@ -128,7 +128,7 @@ BUILD_DATA = {
                 'from_remote': GLANCE_LOGGING_CNF,
                 'user': 'glance',
                 'group': 'glance',
-                'mode': 0644
+                'mode': '0644'
             },
             {
                 'path': '/etc/glance',
@@ -136,7 +136,7 @@ BUILD_DATA = {
                 'from_remote': GLANCE_POLICY_JSON,
                 'user': 'glance',
                 'group': 'glance',
-                'mode': 0644
+                'mode': '0644'
             },
             {
                 'path': '/etc/glance',
@@ -144,7 +144,7 @@ BUILD_DATA = {
                 'from_remote': GLANCE_SCHEMA_IMAGE_JSON,
                 'user': 'glance',
                 'group': 'glance',
-                'mode': 0644
+                'mode': '0644'
             },
             {
                 'path': '/etc/glance',
@@ -152,7 +152,7 @@ BUILD_DATA = {
                 'from_remote': GLANCE_PROPERTY,
                 'user': 'glance',
                 'group': 'glance',
-                'mode': 0644
+                'mode': '0644'
             }
         ],
         'pip_install': [

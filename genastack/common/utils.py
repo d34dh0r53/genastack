@@ -10,10 +10,10 @@
 import errno
 import hashlib
 import httplib
+import logging
 import os
 import shelve
 import tempfile
-import logging
 import urlparse
 
 import genastack
@@ -22,6 +22,10 @@ LOG = logging.getLogger('genastack-common')
 
 
 RAX_BASE = 'openstack'
+
+
+def octal_converter(num):
+    return int(num, 8)
 
 
 def return_rax_dir(path=None):

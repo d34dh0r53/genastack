@@ -7,8 +7,8 @@
 # details (see GNU General Public License).
 # http://www.gnu.org/licenses/gpl.html
 # =============================================================================
-import os
 import sys
+import os
 
 possible_topdir = os.path.normpath(
     os.path.join(
