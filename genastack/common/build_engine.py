@@ -140,11 +140,10 @@ class EngineRunner(object):
 
         :param kwargs: ``dict``
         """
-        env = os.environ.copy()
         bin_path = utils.return_rax_dir(path='bin')
-        env['path'] = '%s:%s' % (bin_path, env.get('path', '/usr/local/bin'))
-        pip_install_all = ['pip install %s' % p for p in args]
-        self.__execute_command(commands=pip_install_all, env=env)
+        pip_command = os.path.join(bin_path, 'pip')
+        pip_install_all = ['%s install %s' % (pip_command, p) for p in args]
+        self.__execute_command(commands=pip_install_all)
 
     def _init_script(self, args):
         """Place a generic init script on the system.
