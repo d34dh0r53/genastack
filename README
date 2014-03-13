@@ -137,6 +137,10 @@ Also you can use other modules / methods from within the role. It simply has to 
 All of the providers for roles
 ------------------------------
 
+This is incomplete
+^^^^^^^^^^^^^^^^^^
+
+
 ldconfig:
   ldconfig  creates,  updates, and removes the necessary links and cache (for use by the run-time linker, ld.so). This resource can be used to create new links to trusted libraries.
 
@@ -183,6 +187,6 @@ init_script:
   NOTICE:
     This resource has two optional values. ``chuid`` and ``chdir`` do not need to be specified.
 
-    
+
 
 
