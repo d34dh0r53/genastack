@@ -4,23 +4,41 @@ Genastack Openstack Installer
 :tags: rackspace, openstack, dev
 :category: \*nix
 
-Build Openstack in a Contained Application. This utility will Compile the necessary bits and install the rest in a stable way.
+Build Openstack in a Contained Application. This utility will Compile the necessary bits and install the rest.
+
+The approach here is to install all of openstack from upstream git. This will allow you to install Openstack from a stable SHA/Branch/Tag.
 
 
-* This is presently a work in progress and does not currently install any openstack packages.
+Why
+^^^
+
+I built this application so that you, the cloud provider, can install openstack on your system without having to add third party repos and or installing packages on your system which are subject to constant change. Additionally it has been my experience that packages produced by upstream package providers have been fraught with peril. Additionally most of these packages make assumptions about how to setup the system, where to place files, and what the user is going to want to have available.  When using **Genastack** the application will install the needed Openstack bits, place the service related configuration files in ``/etc/`` from what is provided in the upstream examples.  **Genastack** only uses the detected operating systems package manager for installing libs, the application does all of the rest of the installation from the sources found within the roles.
+
+
+NOTICE
+^^^^^^
+
+* This is presently a work in progress and does not currently install all of openstack.  I have
 
 * This application will presently only install Python on a system with all of it required dependencies.
 
 * This application DOES NOT WORK ON RHEL or RHEL based Systems... at least not yet.
 
 
+ROLES
+^^^^^
+
+Roles are instructions on how to install software based on what is being installed.
+
+
 Building roles is simple:
   1. Create a python module in the roles directory.
 
-  2. in the ``__init__.py`` file add a constant named `BUILD_DATA`
+  2. in the ``__init__.py`` file add a constant named ``BUILD_DATA`` this is a *dict*.
 
   3. name your first key the name of the new role. This will get parsed as a run option.
 
+  4. create a ``help`` key and provide some useful information about the role. This information is presented via the command line to the user for the rule.
 
 Example:
 
@@ -130,8 +148,7 @@ Example:
 
 
 
-When you create the new role, the ``dict`` constant can execute within it python, so feel free to build out all the things.
-Also you can use other modules / methods from within the role. It simply has to result in a completed `BUILD_DATA` constant.
+When you create the new role, the ``dict`` constant can have executable code. There is nothing special about this ``dict`` it is pyhon, so feel free to build out all the things using all the python you want. Also you can use other modules / methods from within the role. It simply has to result in a completed **BUILD_DATA** constant.
 
 
 All of the providers for roles
@@ -140,36 +157,183 @@ All of the providers for roles
 This is incomplete
 ^^^^^^^^^^^^^^^^^^
 
+required:
+  The required provider informs Genastack that your role deps on other known roles.
+
+  uses: this is a list of strings
+
+  .. code-block:: python
+
+    'required': ['role2', 'role2']
+
+
+group_create:
+  The group_create provider creates groups on the local system.
+
+  uses: this is a list of dictionaries
+
+  .. code-block:: python
+
+    'group_create': [
+        {
+            'group': 'SomeGroupName',
+        }
+    ]
+
+  Options:
+
+    * 'system' Creates a system group if set True, default False
+
+
+user_create:
+  The user_create provider creates users on the local system
+
+  uses: this is a list of dictionaries
+
+  .. code-block:: python
+
+    'user_create': [
+        {
+            'user': 'SomeUserName'
+        }
+    ]
+
+  Options:
+
+    * 'group' Set the group that the new user will belong too, default group is the same as the user's name.
+    * 'no_group' Creates a user without a group, default is False
+    * 'no_home' Creates a user without a home folder, default is /home/username
+    * 'shell' Sets the shell for the new user, default is '/bin/false'
+    * 'system' Creates a system user if set True, default False
+
+
+directories:
+  The directories provider will create directories on the local system
+
+  uses: this is a list of dictionaries
+
+  .. code-block:: python
+
+    'directories': [
+        {
+            'path': '/path/to/some/folder'
+        }
+    ]
+
+  Options:
+
+    * 'user' Sets UID on the directory, default is 'root'
+    * 'group' Sets GID on the directory, default is 'root'
+    * 'mode' Sets the MODE on the directory, default is 0755
+
+
+file_create:
+  The file_create provider will create files on the local system
+
+  uses: this is a list of dictionaries
+
+  .. code-block:: python
+
+    'file_create': [
+        {
+            'path': '/path/to/some/folder',
+            'name': 'somefilename',
+        }
+    ]
+
+  Mutually Exclusive and Required:
+
+    * 'from_remote' Gets a file from some **URL** and places its contents in the file specified
+    * 'contents' Writes the new file the provided contents. This is useful for passing simple scripts around
+
+  Options:
+
+    * 'user': Sets the UID of the new file, default is 'root'
+    * 'group': Sets the GID of the new file, default is 'root'
+    * 'mode': Sets the MODE of the new file, default is 0644
+
+
+apt_packages, yum_packages:
+  The apt_packages and yum_packages provider will install packages using the detected systems package manager.  These can exists in the same role without issues as Genastack will detect the operating system and use the appropriate package manager.
+
+  uses: this is a list of strings
+
+  .. code-block:: python
+
+    'apt_packages': ['package1', 'package2']
+
+
+build:
+  the build provider allows you to build a package from source. The built package will exist in the prefix directory as specified in the bock.
+
+  uses: this is a list of dictionaries
+
+  .. code-block:: python
+  
+  
+  
 
 ldconfig:
   ldconfig  creates,  updates, and removes the necessary links and cache (for use by the run-time linker, ld.so). This resource can be used to create new links to trusted libraries.
 
   uses: this is a list of strings
 
-  .. code-block:: json
+  .. code-block:: python
 
     'ldconfig' : ['path/to/lib=/path/to/new/lib/configFile.conf' ]
 
 
   NOTICE:
-    In order for this resource to work correctly you have to end the new config file with `.conf`.
+    In order for this resource to work correctly you have to end the new config file with **.conf**.
+
+
+remote_script:
+  The remote_script provider allows you to execute a remote script on the system.
+
+
+  .. code-block:: python
+
+    'remote_script': [
+        {
+            'get': {
+                'url': 'https://some.url',
+                'path': '/some/local/path',
+                'name': 'nameofscript',
+                'uncompress': False
+            },
+            'interpreter': '/bin/bash',
+        }
+    ]
+
+  Options in the 'get' block:
+
+    * 'url' This is the full URL to the script that Genastack will downloaded
+    * 'path' this is the place that Genastack will save the script while working with it.
+    * 'name' name of the script.
+    * 'uncompress' If set Genastack will attempt to uncompress the downloaded file. If you are uncompressing an archive you may need to set the path in the name of the file.
+
+
+  Options:
+
+    * 'not_if_exists' This is a string and should be the full path to a file. If this is set Genastack will look to see if the the something exists. If this is found to be true Genastack will not rerun the script.
+    * 'interpreter' This is the path to the interpreter that will be used to execute the script.
 
 
 pip_install:
-  pip_install will use ``pip`` to install new python packages.  This resource will use the version of pip that was installed in the new `/opt/openstack` path.
+  pip_install will use ``pip`` to install new python packages.  This resource will use the version of pip that was installed in the new */opt/openstack* path.
 
   uses: this is a lit of strings
 
-  .. code-block:: json
+  .. code-block:: python
 
-    'pip_install': ['python-novaclient']
+    'pip_install': ['package1', 'package2']
 
 
 
 init_script:
   init_script will create a basic init script for the application referenced.
 
-  .. code-block:: json
+  .. code-block:: python
 
     'init_script': [
         {
@@ -186,7 +350,3 @@ init_script:
 
   NOTICE:
     This resource has two optional values. ``chuid`` and ``chdir`` do not need to be specified.
-
-
-
-
