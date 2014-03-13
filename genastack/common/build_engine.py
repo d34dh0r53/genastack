@@ -86,7 +86,7 @@ class EngineRunner(object):
         else:
             return local_path
 
-    def __execute_command(self, commands, env=None):
+    def __execute_command(self, commands, env=None, execute='/bin/bash'):
         """Execute a list of commands.
 
         All commands executed will check for a return code of non-Zero.
@@ -104,7 +104,7 @@ class EngineRunner(object):
         for command in commands:
             LOG.info('COMMAND: [ %s ]' % command)
             subprocess.check_call(
-                command, shell=True, env=env, stdout=output
+                command, shell=True, env=env, stdout=output, executable=execute
             )
 
     def __not_if_exists(self, check):
@@ -151,12 +151,10 @@ class EngineRunner(object):
         :param args: ``list``
         """
         for script in args:
-            bin_path = script['bin_path']
             name = script['program']
-            full_path = os.path.join(bin_path, name)
-            execute = ' '.join([script['bin'], script.get('options', '')])
+            full_path = os.path.join(script['bin_path'], name)
             script['bin'] = full_path
-            script['exec'] = execute
+            script['exec'] = ' '.join([full_path, script.get('options', '')])
             script['pid_file'] = '/var/run/%s.pid' % name
 
             ssd = [
@@ -175,11 +173,10 @@ class EngineRunner(object):
             ssd.append('--exec %(exec)s')
             script['start_stop_daemon'] = ' '.join(ssd) % script
 
-            script = basic_init.INIT_SCRIPT % script
             file_create = {
                 'path': script['init_path'],
                 'name': script['name'],
-                'contents': script,
+                'contents': basic_init.INIT_SCRIPT % script,
                 'group': 'root',
                 'user': 'root',
                 'mode': 0755
@@ -260,7 +257,6 @@ class EngineRunner(object):
         for build in args:
             if self.__not_if_exists(check=build) is False:
                 self.__compiler(kwargs=build)
-
 
     def _group_create(self, args):
         """Create local file on the system.
@@ -441,6 +437,13 @@ class EngineRunner(object):
             else:
                 self.job_dict[k].append(v)
 
+    def _execute(self, args):
+        """Execute some raw commands.
+
+        :param: args: ``list``
+        """
+        self.__execute_command(commands=args)
+
     def run(self, init_items):
         """Run the method.
 
@@ -471,7 +474,8 @@ class EngineRunner(object):
             'ldconfig',
             'remote_script',
             'pip_install',
-            'init_script'
+            'init_script',
+            'execute'
         ]
 
         for run in run_list:

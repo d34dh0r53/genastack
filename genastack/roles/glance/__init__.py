@@ -161,8 +161,7 @@ BUILD_DATA = {
             'warlock'
         ],
         'apt_packages': [
-            'sqlite3',
-            'cronie'
+            'sqlite3'
         ]
     }
 }

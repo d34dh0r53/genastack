@@ -41,6 +41,9 @@ INSTALL_COMMANDS = [
 BUILD_DATA = {
     'base': {
         'help': 'Install base packages.',
+        'execute': [
+            'source /etc/profile.d/openstack_default.sh'
+        ],
         'directories': [
             {
                 'path': '/etc/profile.d',
@@ -82,7 +85,7 @@ BUILD_DATA = {
         'file_create': [
             {
                 'path': '/etc/profile.d',
-                'name': 'rackspace_default.sh',
+                'name': 'openstack_default.sh',
                 'contents': RAX_BIN_SCRIPT,
                 'user': 'root',
                 'group': 'root',

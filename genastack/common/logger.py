@@ -29,7 +29,7 @@ def logger_setup(name='genastack', debug_logging=False, handler=False):
 
     fileHandler = handlers.RotatingFileHandler(
         filename=return_logfile(filename='%s.log' % name),
-        maxBytes=51200,
+        maxBytes=51200000,
         backupCount=5
     )
 

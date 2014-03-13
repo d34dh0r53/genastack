@@ -52,6 +52,12 @@ BUILD_DATA = {
                 'user': 'keystone',
                 'group': 'keystone',
                 'mode': 0755
+            },
+            {
+                'path': '/etc/keystone/ssl',
+                'user': 'keystone',
+                'group': 'keystone',
+                'mode': 0755
             }
         ],
         'group_create': [
