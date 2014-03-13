@@ -296,13 +296,14 @@ class EngineRunner(object):
         :param: args: ``list``
         """
         for user_create in args:
+            username = user_create.get('user')
             try:
-                pwd.getpwnam(user_create.get('user'))
+                pwd.getpwnam(username)
             except KeyError:
                 user = ['useradd']
                 # Group assignment
-                no_group = user_create.get('no_group')
-                group = user_create.get('group')
+                no_group = user_create.get('no_group', False)
+                group = user_create.get('group', username)
                 if no_group is True or group is None:
                     user.append('--no-user-group')
                 else:
@@ -310,7 +311,7 @@ class EngineRunner(object):
 
                 # User assignment
                 no_home = user_create.get('no_home')
-                home = user_create.get('home')
+                home = user_create.get('home', os.path.join('/home', username))
                 if no_home is True or home is None:
                     user.append('--no-create-home')
                 else:
@@ -375,6 +376,9 @@ class EngineRunner(object):
                 utils.mkdir_p(path=path)
                 if mode_if is not None:
                     directory['mode'] = mode_if
+                elif 'mode' not in directory:
+                    directory['mode'] = 0755
+
                 self.__set_perms(inode=path, kwargs=directory)
 
     def __distro_check(self):
