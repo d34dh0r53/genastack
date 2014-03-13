@@ -45,103 +45,44 @@ Example:
 .. code-block:: python
 
     BUILD_DATA = {
-        'keystone': {
-            'help': 'Install Keystone from upstream on Branch "%s"' % BRANCH,
+        'something_new': {
+            'help': 'install some things',
             'required': [
-                'python'
+                'some', 'other', 'role'
             ],
             'directories': [
                 {
-                    'path': '/var/log/keystone',
-                    'user': 'keystone',
-                    'group': 'keystone',
-                    'mode': 0755
-                },
-                {
-                    'path': '/var/lib/keystone',
-                    'user': 'keystone',
-                    'group': 'keystone',
-                    'mode': 0755
-                },
-                {
-                    'path': '/etc/keystone',
-                    'user': 'keystone',
-                    'group': 'keystone',
-                    'mode': 0755
-                },
-                {
-                    'path': '/etc/keystone/ssl',
-                    'user': 'keystone',
-                    'group': 'keystone',
-                    'mode': 0755
+                    'path': '/some/path',
+                    'user': 'someuser',
+                    'group': 'someuser',
                 }
             ],
             'group_create': [
                 {
-                    'group': 'keystone',
-                    'system': True
+                    'group': 'somegroup',
                 }
             ],
             'user_create': [
                 {
-                    'user': 'keystone',
-                    'group': 'keystone',
-                    'home': '/var/lib/keystone',
-                    'system': True
+                    'user': 'someuser',
+                    'group': 'someuser',
+                    'home': '/some/path/home',
                 }
             ],
             'file_create': [
                 {
-                    'path': '/etc/keystone',
-                    'name': 'keystone.conf',
-                    'from_remote': KEYSTONE_CONF,
-                    'user': 'keystone',
-                    'group': 'keystone',
-                    'mode': 0644
-                },
-                {
-                    'path': '/etc/keystone',
-                    'name': 'keystone-paste.ini',
-                    'from_remote': KEYSTONE_PASTE,
-                    'user': 'keystone',
-                    'group': 'keystone',
-                    'mode': 0644
-                },
-                {
-                    'path': '/etc/keystone',
-                    'name': 'logging.conf.sample',
-                    'from_remote': KEYSTONE_LOGGING,
-                    'user': 'keystone',
-                    'group': 'keystone',
-                    'mode': 0644
-                },
-                {
-                    'path': '/etc/keystone',
-                    'name': 'policy.json',
-                    'from_remote': KEYSTONE_POLICY_JSON,
-                    'user': 'keystone',
-                    'group': 'keystone',
-                    'mode': 0644
-                },
-                {
-                    'path': '/etc/keystone',
-                    'name': 'policy.v3cloudsample.json',
-                    'from_remote': KEYSTONE_POLICY_JSON_V3API,
-                    'user': 'keystone',
-                    'group': 'keystone',
-                    'mode': 0644
+                    'path': '/some/path',
+                    'name': 'somefile.something',
+                    'from_remote': 'https://some.url/somefile',
+                    'user': 'someuser',
+                    'group': 'someuser',
                 }
             ],
             'pip_install': [
-                'git+%s@%s' % (KEYSTONE_PROJECT, BRANCH)
+                'some-pip-package'
             ],
             'apt_packages': [
-                'libsasl2-dev',
-                'debhelper',
-                'dh-apparmor',
-                'docutils-common',
-                'libjs-sphinxdoc',
-                'libjs-underscore'
+                'some', 'apt', 'package'
             ]
         }
     }
@@ -181,7 +122,6 @@ group_create:
     ]
 
   Options:
-
     * 'system' Creates a system group if set True, default False
 
 
@@ -199,11 +139,14 @@ user_create:
     ]
 
   Options:
-
     * 'group' Set the group that the new user will belong too, default group is the same as the user's name.
+
     * 'no_group' Creates a user without a group, default is False
+
     * 'no_home' Creates a user without a home folder, default is /home/username
+
     * 'shell' Sets the shell for the new user, default is '/bin/false'
+
     * 'system' Creates a system user if set True, default False
 
 
@@ -221,9 +164,10 @@ directories:
     ]
 
   Options:
-
     * 'user' Sets UID on the directory, default is 'root'
+
     * 'group' Sets GID on the directory, default is 'root'
+
     * 'mode' Sets the MODE on the directory, default is 0755
 
 
@@ -242,14 +186,15 @@ file_create:
     ]
 
   Mutually Exclusive and Required:
-
     * 'from_remote' Gets a file from some **URL** and places its contents in the file specified
+
     * 'contents' Writes the new file the provided contents. This is useful for passing simple scripts around
 
   Options:
-
     * 'user': Sets the UID of the new file, default is 'root'
+
     * 'group': Sets the GID of the new file, default is 'root'
+
     * 'mode': Sets the MODE of the new file, default is 0644
 
 
@@ -306,16 +251,18 @@ remote_script:
     ]
 
   Options in the 'get' block:
-
     * 'url' This is the full URL to the script that Genastack will downloaded
+
     * 'path' this is the place that Genastack will save the script while working with it.
+
     * 'name' name of the script.
+
     * 'uncompress' If set Genastack will attempt to uncompress the downloaded file. If you are uncompressing an archive you may need to set the path in the name of the file.
 
 
   Options:
-
     * 'not_if_exists' This is a string and should be the full path to a file. If this is set Genastack will look to see if the the something exists. If this is found to be true Genastack will not rerun the script.
+
     * 'interpreter' This is the path to the interpreter that will be used to execute the script.
 
 
