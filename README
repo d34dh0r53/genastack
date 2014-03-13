@@ -18,7 +18,13 @@ I built this application so that you, the cloud provider, can install openstack 
 NOTICE
 ^^^^^^
 
-* This is presently a work in progress and does not currently install all of openstack.  I have
+* This is presently a work in progress and does not currently install all of openstack.
+
+Supported:
+  * keystone
+  * glance
+  * cinder
+
 
 * This application will presently only install Python on a system with all of it required dependencies.
 
@@ -95,8 +101,6 @@ When you create the new role, the ``dict`` constant can have executable code. Th
 All of the providers for roles
 ------------------------------
 
-This is incomplete
-^^^^^^^^^^^^^^^^^^
 
 required:
   The required provider informs Genastack that your role deps on other known roles.
@@ -325,7 +329,7 @@ init_script:
         {
             'help': 'Start and stop keystone on boot',
             'init_path': '/etc/init.d',
-            'bin_path': /opt/openstack/bin,
+            'bin_path': '/opt/openstack/bin',
             'name': 'keystone',
             'chuid': 'keystone',
             'chdir': '/var/lib/keystone',
