@@ -27,49 +27,162 @@ Example:
 .. code-block:: python
 
     BUILD_DATA = {
-        'SomeNewRole': {
-            'help': 'A description string',
+        'keystone': {
+            'help': 'Install Keystone from upstream on Branch "%s"' % BRANCH,
             'required': [
-                'Any role that you want to require before executing this new one'
+                'python'
             ],
-            'libs': [
-                'Any lib that you might want to require, this is the same as a required entry'
-                'The difference between this and a required entry is the precedence.'
-            ],
-            'remote_script': {
-                'get': {
-                    'url': 'https://someURL.somewhere.something/fileName',
-                    'path': TEMP_PATH,
-                    'name': 'Name_file_when_saved',
-                    'uncompress': True or False
+            'directories': [
+                {
+                    'path': '/var/log/keystone',
+                    'user': 'keystone',
+                    'group': 'keystone',
+                    'mode': 0755
                 },
-                'not_if_exists': 'Path/to/some/constraint/to/check',
-                'interpreter': 'path/to/interpreter/to/execute/script',
-            },
-            'build': {
-                'get': {
-                    'url': 'https://someURL.somewhere.something/fileName',
-                    'path': TEMP_PATH,
-                    'name': 'Name_file_when_saved',
-                    'uncompress': True or False
+                {
+                    'path': '/var/lib/keystone',
+                    'user': 'keystone',
+                    'group': 'keystone',
+                    'mode': 0755
                 },
-                'not_if_exists': 'Path/to/some/constraint/to/check',
-                'build_commands': INSTALL_COMMANDS,
-                'export': [
-                    'environment=some_variable_to_export'
-                ],
-            },
-            'ldconfig': [
-                '/contents/of/ld/file=/location/to/ld/file'
+                {
+                    'path': '/etc/keystone',
+                    'user': 'keystone',
+                    'group': 'keystone',
+                    'mode': 0755
+                },
+                {
+                    'path': '/etc/keystone/ssl',
+                    'user': 'keystone',
+                    'group': 'keystone',
+                    'mode': 0755
+                }
             ],
-            'packages': {
-                'apt': [
-                    'distro_package',
-                    'some_other_package'
-                ]
-            }
+            'group_create': [
+                {
+                    'group': 'keystone',
+                    'system': True
+                }
+            ],
+            'user_create': [
+                {
+                    'user': 'keystone',
+                    'group': 'keystone',
+                    'home': '/var/lib/keystone',
+                    'system': True
+                }
+            ],
+            'file_create': [
+                {
+                    'path': '/etc/keystone',
+                    'name': 'keystone.conf',
+                    'from_remote': KEYSTONE_CONF,
+                    'user': 'keystone',
+                    'group': 'keystone',
+                    'mode': 0644
+                },
+                {
+                    'path': '/etc/keystone',
+                    'name': 'keystone-paste.ini',
+                    'from_remote': KEYSTONE_PASTE,
+                    'user': 'keystone',
+                    'group': 'keystone',
+                    'mode': 0644
+                },
+                {
+                    'path': '/etc/keystone',
+                    'name': 'logging.conf.sample',
+                    'from_remote': KEYSTONE_LOGGING,
+                    'user': 'keystone',
+                    'group': 'keystone',
+                    'mode': 0644
+                },
+                {
+                    'path': '/etc/keystone',
+                    'name': 'policy.json',
+                    'from_remote': KEYSTONE_POLICY_JSON,
+                    'user': 'keystone',
+                    'group': 'keystone',
+                    'mode': 0644
+                },
+                {
+                    'path': '/etc/keystone',
+                    'name': 'policy.v3cloudsample.json',
+                    'from_remote': KEYSTONE_POLICY_JSON_V3API,
+                    'user': 'keystone',
+                    'group': 'keystone',
+                    'mode': 0644
+                }
+            ],
+            'pip_install': [
+                'git+%s@%s' % (KEYSTONE_PROJECT, BRANCH)
+            ],
+            'apt_packages': [
+                'libsasl2-dev',
+                'debhelper',
+                'dh-apparmor',
+                'docutils-common',
+                'libjs-sphinxdoc',
+                'libjs-underscore'
+            ]
         }
     }
 
 
-When you create the new role, the json constant can execute within it python, so feel free to build out all the things.
+
+When you create the new role, the ``dict`` constant can execute within it python, so feel free to build out all the things.
+Also you can use other modules / methods from within the role. It simply has to result in a completed `BUILD_DATA` constant.
+
+
+All of the providers for roles
+------------------------------
+
+ldconfig:
+  ldconfig  creates,  updates, and removes the necessary links and cache (for use by the run-time linker, ld.so). This resource can be used to create new links to trusted libraries.
+
+  uses: this is a list of strings
+
+  .. code-block:: json
+
+    'ldconfig' : ['path/to/lib=/path/to/new/lib/configFile.conf' ]
+
+
+  NOTICE:
+    In order for this resource to work correctly you have to end the new config file with `.conf`.
+
+
+pip_install:
+  pip_install will use ``pip`` to install new python packages.  This resource will use the version of pip that was installed in the new `/opt/openstack` path.
+
+  uses: this is a lit of strings
+
+  .. code-block:: json
+
+    'pip_install': ['python-novaclient']
+
+
+
+init_script:
+  init_script will create a basic init script for the application referenced.
+
+  .. code-block:: json
+
+    'init_script': [
+        {
+            'help': 'Start and stop keystone on boot',
+            'init_path': '/etc/init.d',
+            'bin_path': /opt/openstack/bin,
+            'name': 'keystone',
+            'chuid': 'keystone',
+            'chdir': '/var/lib/keystone',
+            'program': 'keystone-all'
+        }
+    ]
+
+
+  NOTICE:
+    This resource has two optional values. ``chuid`` and ``chdir`` do not need to be specified.
+
+    
+
+
