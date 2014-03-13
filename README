@@ -215,8 +215,47 @@ build:
 
   .. code-block:: python
   
-  
-  
+    'build': [
+        {
+            'get': {
+                'url': 'https://some/package/path.url/path,
+                'path': '/local/working/directory',
+                'name': 'package_name.tgz',
+                'md5sum': '1d8728eb0dfcac72a0fd99c17ec7f386',
+                'uncompress': True
+            },
+            'build_commands': [
+                './configure --prefix=%s' % '/opt/openstack',
+                'make',
+                'make install'
+            ],
+            'export': [
+                'CFLAGS=-I/usr/include/x86_64-linux-gnu'
+                'LDFLAGS=-L/usr/lib/x86_64-linux-gnu'
+            ]
+        }
+    ]
+
+
+  Options in the 'get' block:
+    * 'url' This is the full URL to the script that Genastack will downloaded
+
+    * 'path' this is the place that Genastack will save the script while working with it.
+
+    * 'name' name of the script.
+
+    * 'md5sum' If the MD5sum is provided the downloaded package will be compared to the provided value and if the values do not match the package installation will not continue.
+
+    * 'uncompress' If set Genastack will attempt to uncompress the downloaded file. If you are uncompressing an archive you may need to set the path in the name of the file.
+
+
+  Options:
+    * 'not_if_exists' This is a string and should be the full path to a file. If this is set Genastack will look to see if the the something exists. If this is found to be true Genastack will not rerun the script.
+
+    * 'build_commands' This is a list of commands required to build the package
+
+    * 'exports' This is a list of environment exports that may be required to appropriately build the package.
+
 
 ldconfig:
   ldconfig  creates,  updates, and removes the necessary links and cache (for use by the run-time linker, ld.so). This resource can be used to create new links to trusted libraries.
