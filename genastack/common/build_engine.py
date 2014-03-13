@@ -30,6 +30,7 @@ class EngineRunner(object):
     def __init__(self, args):
         self.args = args
         self.run_roles = []
+        self.install_db = None
         self.job_dict = collections.defaultdict(list)
 
 
@@ -415,6 +416,11 @@ class EngineRunner(object):
         :param args: ``list``
         """
         for req in args:
+            if self.args.get('force') is True:
+                continue
+            elif req in self.install_db:
+                break
+
             if req in self.run_roles:
                 break
 
@@ -444,11 +450,12 @@ class EngineRunner(object):
         """
         self.__execute_command(commands=args)
 
-    def run(self, init_items):
+    def run(self, init_items, install_db):
         """Run the method.
 
         :param init_items: ``dict``
         """
+        self.install_db = install_db
         LOG.info('Understanding the scope of work')
         self.merge_init_items(items=init_items)
 
@@ -484,4 +491,7 @@ class EngineRunner(object):
                 if hasattr(self, run_command):
                     action = getattr(self, run_command)
                     action(args=self.job_dict.pop(run))
+
+        for role in self.run_roles:
+            self.install_db.append(role)
         return 'success'

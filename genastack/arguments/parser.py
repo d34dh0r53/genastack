@@ -28,6 +28,11 @@ def argument_parser():
     subpar = parser.add_subparsers(
         title='Package Installer', metavar='<Commands>\n'
     )
+    installed = subpar.add_parser(
+        'installed-roles', help='Show all of the locally installed roles'
+    )
+    installed.set_defaults(method='installed_roles')
+
     for role in role_loader.RoleLoad(config_type=None).load_all_roles():
         for key, value in role.items():
             base = subpar.add_parser(key, help=value.get('help'))

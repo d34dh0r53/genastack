@@ -11,6 +11,7 @@ import errno
 import hashlib
 import httplib
 import os
+import shelve
 import tempfile
 import logging
 import urlparse
@@ -43,6 +44,81 @@ def return_temp_dir():
     rax = os.path.join(temp, '%s_build' % RAX_BASE)
     mkdir_p(rax)
     return tempfile.mkdtemp(prefix='build_temp_', dir=rax)
+
+
+def dbm_create(db_path, db_name, db_key):
+    """Create a DBM.
+
+    :param db_path: Path to a directory
+    :param db_name: Name of DBM
+    """
+
+    db_path = os.path.expanduser(db_path)
+    if not os.path.exists(db_path):
+        os.mkdir(db_path)
+
+    database_path = os.path.join(db_path, '%s.dbm' % db_name)
+    with Shelve(file_path=database_path) as db:
+        host = db.get(db_key)
+        if host is None:
+            db[db_key] = []
+
+    return database_path
+
+
+def get_db_section(dbk, section):
+    db_section = dbk.get(section)
+    if db_section is None:
+        db_section = dbk[section] = {}
+    return db_section
+
+
+def job_status_saver(db_path, db_key, section, args, status):
+    with Shelve(file_path=db_path) as db:
+        dbk = db.get(db_key)
+        db_section = get_db_section(dbk=dbk, section=section)
+        db_section['complete'] = status
+        db_section['args'] = args
+
+
+def load_saved_args(db_path, db_key, section, args):
+    with Shelve(file_path=db_path) as db:
+        dbk = db.get(db_key)
+        db_section = get_db_section(dbk=dbk, section=section)
+        if 'args' in db_section:
+            new_args = section.copy()
+            new_args.update(args)
+            return new_args
+        else:
+            return args
+
+
+class Shelve(object):
+    """Context Manager for opening and closing access to the DBM."""
+
+    def __init__(self, file_path):
+        """Set the Path to the DBM to create/Open.
+
+        :param file_path: Full path to file
+        """
+
+        self.shelve = file_path
+        self.open_shelve = None
+
+    def __enter__(self):
+        """Open the DBM in r/w mode.
+
+        :return: Open DBM
+        """
+
+        self.open_shelve = shelve.open(self.shelve, writeback=True)
+        return self.open_shelve
+
+    def __exit__(self, type, value, traceback):
+        """Close DBM Connection."""
+
+        self.open_shelve.sync()
+        self.open_shelve.close()
 
 
 class OpenConnection(object):
@@ -126,7 +202,6 @@ def mkdir_p(path):
             raise OSError(
                 'The provided path can not be turned into a directory.'
             )
-
 
 
 def md5_checker(md5sum, local_file):
