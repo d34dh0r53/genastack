@@ -14,9 +14,7 @@ from genastack.common import utils
 
 TEMP_PATH = utils.return_temp_dir()
 WORK_PATH = utils.return_rax_dir()
-LIBS_PATH = utils.return_rax_dir(path='lib')
 BIN_PATH = utils.return_rax_dir(path='bin')
-INCLUDE_PATH = utils.return_rax_dir(path='include')
 
 
 PYTHON_URL = 'http://www.python.org/ftp/python/2.7.6/Python-2.7.6.tgz'
@@ -30,20 +28,6 @@ if [[ -f "${VENV_PATH}" ]]; then
   source ${VENV_PATH}
 fi
 """ % os.path.join(BIN_PATH, 'activate')
-
-
-INSTALL_COMMANDS = [
-    './configure --prefix=%s --enable-unicode=ucs4'
-    ' --with-threads --with-signal-module' % WORK_PATH,
-    'make -j4',
-    'make install'
-]
-
-
-EXPORTS = [
-    'CFLAGS=-I%s -I/usr/include/x86_64-linux-gnu' % INCLUDE_PATH,
-    'LDFLAGS=-L%s -L/usr/lib/x86_64-linux-gnu' % LIBS_PATH
-]
 
 
 BUILD_DATA = {
@@ -114,14 +98,10 @@ BUILD_DATA = {
             'python-libvirt',
             'python-dev'
         ],
-        'file_create': [
+        'python_venv': [
             {
-                'path': '/etc/profile.d',
-                'name': 'openstack_venv.sh',
-                'contents': RAX_SOURCE_SCRIPT,
-                'user': 'root',
-                'group': 'root',
-                'mode': '0755'
+                'path': '/opt/openstack',
+                'options': '--system-site-packages'
             }
         ],
         'execute': [

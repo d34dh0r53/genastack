@@ -451,6 +451,36 @@ class EngineRunner(object):
             else:
                 self.job_dict[k].append(v)
 
+    def _python_venv(self, args):
+        """Build a Python Virtual Environment.
+
+        :param args: ``list``
+        """
+        commands = []
+        for venv in args:
+            venv_commands = ['virtualenv']
+            if 'options' in venv:
+                venv_commands.append(venv['options'])
+
+            venv_path = venv.get('path', '/opt/openstack')
+            venv_commands.append(venv_path)
+            commands.append(' '.join(venv_commands))
+
+            venv_name = '%s_venv.sh' % venv_path.replace('/', '_')
+            venv_activate = os.path.join(venv_path, 'bin/activate')
+            if venv.get('make_default', False) is True:
+                source_env = {
+                    'path': venv_name,
+                    'name': '/etc/profile.d',
+                    'contents': 'source %s' % venv_activate,
+                    'user': 'root',
+                    'group': 'root',
+                    'mode': '0755'
+                }
+                self._file_create(args=[source_env])
+
+        self.__execute_command(commands=commands)
+
     def _execute(self, args):
         """Execute some raw commands.
 
@@ -488,6 +518,7 @@ class EngineRunner(object):
             'build',
             'ldconfig',
             'remote_script',
+            'python_venv',
             'pip_install',
             'init_script',
             'execute'
