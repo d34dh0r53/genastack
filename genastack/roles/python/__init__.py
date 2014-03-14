@@ -47,8 +47,8 @@ EXPORTS = [
 
 
 BUILD_DATA = {
-    'python_source': {
-        'help': 'Install the python from source.',
+    'python': {
+        'help': 'Install Python.',
         'required': [
             'base'
         ],
