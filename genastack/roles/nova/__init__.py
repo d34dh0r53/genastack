@@ -207,10 +207,13 @@ BUILD_DATA = {
             'sysfsutils',
             'sg3-utils',
             'libvirt-bin',
-            'pm-utils',
             'libvirt-dev',
+            'libvirt0',
+            'python-libvirt',
+            'pm-utils',
             'kvm',
-            'qemu-utils'
+            'qemu-utils',
+            'iptables'
         ]
     }
 }

@@ -41,9 +41,7 @@ BUILD_DATA = {
             'vlan',
             'kpartx',
             'ebtables',
-            'gawk',
-            'iptables'
-
+            'gawk'
         ]
     }
 }

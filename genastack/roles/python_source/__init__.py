@@ -56,23 +56,6 @@ BUILD_DATA = {
                 'interpreter': os.path.join(BIN_PATH, 'python'),
             }
         ],
-        'build': [
-            {
-                'get': {
-                    'url': PYTHON_URL,
-                    'path': TEMP_PATH,
-                    'name': 'Python-2.7.6.tgz',
-                    'md5sum': '1d8728eb0dfcac72a0fd99c17ec7f386',
-                    'uncompress': True
-                },
-                'not_if_exists': os.path.join(BIN_PATH, 'python'),
-                'build_commands': INSTALL_COMMANDS,
-                'export': EXPORTS
-            }
-        ],
-        'ldconfig': [
-            '/opt/python27/lib=/etc/ld.so.conf.d/python27.conf'
-        ],
         'pip_install': [
             'bz2file',
             'd2to1',
@@ -118,9 +101,7 @@ BUILD_DATA = {
             'libxft-dev',
             'tcl8.5-dev',
             'tk8.5-dev',
-            'libffi-dev',
-            'python-libvirt',
-            'python-dev'
+            'libffi-dev'
         ]
     }
 }
