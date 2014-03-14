@@ -66,7 +66,9 @@ BUILD_DATA = {
             'libnl-dev',
             'pm-utils',
             'ebtables',
-            'dnsmasq-base'
+            'dnsmasq-base',
+            'libyajl-dev',
+            'uuid-dev'
         ],
         'init_script': [
             {

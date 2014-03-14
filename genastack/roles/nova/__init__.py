@@ -201,7 +201,6 @@ BUILD_DATA = {
             'git+%s@%s' % (NOVA_PROJECT, BRANCH),
             'python-swiftclient',
             'eventlet',
-            'libvirt-python',
         ],
         'apt_packages': [
             'multipath-tools',
@@ -209,7 +208,9 @@ BUILD_DATA = {
             'sg3-utils',
             'libvirt-bin',
             'pm-utils',
-            'libvirt-dev'
+            'libvirt-dev',
+            'kvm',
+            'qemu-utils'
         ]
     }
 }
