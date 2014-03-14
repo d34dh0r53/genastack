@@ -49,12 +49,12 @@ class EngineRunner(object):
         _group = kwargs.get('group', 'root')
         group = grp.getgrnam(_group).gr_gid
 
-        raw_mode = kwargs.get('mode', '0644')
+        _mode = kwargs.get('mode', '0644')
         os.chown(inode, user, group)
-        os.chmod(inode, utils.octal_converter(raw_mode))
+        os.chmod(inode, utils.octal_converter(_mode))
         LOG.info(
             'Permissions Set [ %s ] user=%s, group=%s, mode=%s',
-            inode, user, group, raw_mode
+            inode, user, group, _mode
         )
 
     @staticmethod
