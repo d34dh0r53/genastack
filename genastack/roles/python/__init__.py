@@ -23,6 +23,15 @@ PYTHON_URL = 'http://www.python.org/ftp/python/2.7.6/Python-2.7.6.tgz'
 PIP_URL = 'https://raw.github.com/pypa/pip/master/contrib/get-pip.py'
 
 
+RAX_SOURCE_SCRIPT = """
+#!/usr/bin/env bash
+VENV_PATH="%s"
+if [[ -f "${VENV_PATH}" ]]; then
+  source ${VENV_PATH}
+fi
+""" % os.path.join(BIN_PATH, 'activate')
+
+
 INSTALL_COMMANDS = [
     './configure --prefix=%s --enable-unicode=ucs4'
     ' --with-threads --with-signal-module' % WORK_PATH,
@@ -38,8 +47,8 @@ EXPORTS = [
 
 
 BUILD_DATA = {
-    'python': {
-        'help': 'Install the python packages and python on a system.',
+    'python_source': {
+        'help': 'Install the python from source.',
         'required': [
             'base'
         ],
@@ -55,23 +64,6 @@ BUILD_DATA = {
                 'not_if_exists': os.path.join(BIN_PATH, 'pip'),
                 'interpreter': os.path.join(BIN_PATH, 'python'),
             }
-        ],
-        'build': [
-            {
-                'get': {
-                    'url': PYTHON_URL,
-                    'path': TEMP_PATH,
-                    'name': 'Python-2.7.6.tgz',
-                    'md5sum': '1d8728eb0dfcac72a0fd99c17ec7f386',
-                    'uncompress': True
-                },
-                'not_if_exists': os.path.join(BIN_PATH, 'python'),
-                'build_commands': INSTALL_COMMANDS,
-                'export': EXPORTS
-            }
-        ],
-        'ldconfig': [
-            '/opt/python27/lib=/etc/ld.so.conf.d/python27.conf'
         ],
         'pip_install': [
             'bz2file',
@@ -121,6 +113,19 @@ BUILD_DATA = {
             'libffi-dev',
             'python-libvirt',
             'python-dev'
+        ],
+        'file_create': [
+            {
+                'path': '/etc/profile.d',
+                'name': 'openstack_venv.sh',
+                'contents': RAX_SOURCE_SCRIPT,
+                'user': 'root',
+                'group': 'root',
+                'mode': '0755'
+            }
+        ],
+        'execute': [
+            'virtualenv --system-site-packages %s' % BIN_PATH
         ]
     }
 }

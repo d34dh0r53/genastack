@@ -38,8 +38,8 @@ EXPORTS = [
 
 
 BUILD_DATA = {
-    'python_source': {
-        'help': 'Install the python from source.',
+    'python': {
+        'help': 'Install the python packages and python on a system.',
         'required': [
             'base'
         ],
@@ -55,6 +55,23 @@ BUILD_DATA = {
                 'not_if_exists': os.path.join(BIN_PATH, 'pip'),
                 'interpreter': os.path.join(BIN_PATH, 'python'),
             }
+        ],
+        'build': [
+            {
+                'get': {
+                    'url': PYTHON_URL,
+                    'path': TEMP_PATH,
+                    'name': 'Python-2.7.6.tgz',
+                    'md5sum': '1d8728eb0dfcac72a0fd99c17ec7f386',
+                    'uncompress': True
+                },
+                'not_if_exists': os.path.join(BIN_PATH, 'python'),
+                'build_commands': INSTALL_COMMANDS,
+                'export': EXPORTS
+            }
+        ],
+        'ldconfig': [
+            '/opt/python27/lib=/etc/ld.so.conf.d/python27.conf'
         ],
         'pip_install': [
             'bz2file',
