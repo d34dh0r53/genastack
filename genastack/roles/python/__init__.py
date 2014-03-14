@@ -62,7 +62,7 @@ BUILD_DATA = {
                     'uncompress': False
                 },
                 'not_if_exists': os.path.join(BIN_PATH, 'pip'),
-                'interpreter': os.path.join(BIN_PATH, 'python'),
+                'interpreter': 'python',
             }
         ],
         'pip_install': [
