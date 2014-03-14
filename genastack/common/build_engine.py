@@ -49,12 +49,12 @@ class EngineRunner(object):
         _group = kwargs.get('group', 'root')
         group = grp.getgrnam(_group).gr_gid
 
-        mode = utils.octal_converter(kwargs.get('mode', '0644'))
+        raw_mode = kwargs.get('mode', '0644')
         os.chown(inode, user, group)
-        os.chmod(inode, mode)
+        os.chmod(inode, utils.octal_converter(raw_mode))
         LOG.info(
             'Permissions Set [ %s ] user=%s, group=%s, mode=%s',
-            inode, user, group, mode
+            inode, user, group, raw_mode
         )
 
     @staticmethod
@@ -180,7 +180,7 @@ class EngineRunner(object):
                 'contents': basic_init.INIT_SCRIPT % script,
                 'group': 'root',
                 'user': 'root',
-                'mode': utils.octal_converter('0755')
+                'mode': '0755'
             }
 
             self._file_create(args=[file_create])
@@ -351,7 +351,7 @@ class EngineRunner(object):
             if not os.path.exists(file_path):
                 self._directories(
                     args=[file_create],
-                    mode_if=utils.octal_converter('0755')
+                    mode_if='0755'
                 )
 
                 if 'from_remote' in file_create:
@@ -381,7 +381,7 @@ class EngineRunner(object):
                 if mode_if is not None:
                     directory['mode'] = mode_if
                 elif 'mode' not in directory:
-                    directory['mode'] = utils.octal_converter('0755')
+                    directory['mode'] = '0755'
 
                 self.__set_perms(inode=path, kwargs=directory)
 

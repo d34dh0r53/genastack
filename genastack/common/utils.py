@@ -25,6 +25,10 @@ RAX_BASE = 'openstack'
 
 
 def octal_converter(num):
+    """Return an octal value from a string.
+
+    :param num: ``str``
+    """
     return int(num, 8)
 
 
