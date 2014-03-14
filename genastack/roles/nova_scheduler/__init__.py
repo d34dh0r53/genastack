@@ -14,21 +14,22 @@ BIN_PATH = utils.return_rax_dir('bin')
 
 
 BUILD_DATA = {
-    'keystone_api': {
-        'help': 'Install Keystone API from upstream',
+    'nova_scheduler': {
+        'help': 'Install nova scheduler from upstream',
         'required': [
-            'keystone',
-            'keystone_client'
+            'nova'
         ],
         'init_script': [
             {
-                'help': 'Start and stop keystone on boot',
+                'help': 'Start and stop nova on boot',
                 'init_path': '/etc/init.d',
                 'bin_path': BIN_PATH,
-                'name': 'keystone',
-                'chuid': 'keystone',
-                'chdir': '/var/lib/keystone',
-                'program': 'keystone-all'
+                'name': 'nova',
+                'chuid': 'nova',
+                'chdir': '/var/lib/nova',
+                'options': '--'
+                           ' --config-file=/etc/nova/nova.conf',
+                'program': 'nova-scheduler'
             }
         ]
     }

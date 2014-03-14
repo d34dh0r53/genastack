@@ -13,23 +13,18 @@ from genastack.common import utils
 BIN_PATH = utils.return_rax_dir('bin')
 
 
+BRANCH = '2.17.0'
+
+
+PROJECT_URL = 'https://github.com/openstack'
+CLIENT = '%s/python-novaclient.git' % PROJECT_URL
+
+
 BUILD_DATA = {
-    'keystone_api': {
-        'help': 'Install Keystone API from upstream',
-        'required': [
-            'keystone',
-            'keystone_client'
-        ],
-        'init_script': [
-            {
-                'help': 'Start and stop keystone on boot',
-                'init_path': '/etc/init.d',
-                'bin_path': BIN_PATH,
-                'name': 'keystone',
-                'chuid': 'keystone',
-                'chdir': '/var/lib/keystone',
-                'program': 'keystone-all'
-            }
+    'nova_client': {
+        'help': 'Install Nova client from upstream, Branch "%s"' % BRANCH,
+        'pip_install': [
+            'git+%s@%s' % (CLIENT, BRANCH)
         ]
     }
 }

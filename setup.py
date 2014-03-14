@@ -8,11 +8,22 @@
 # details (see GNU General Public License).
 # http://www.gnu.org/licenses/gpl.html
 # =============================================================================
+import pkgutil
 import sys
 
 import setuptools
 
 from genastack import info
+from genastack import roles
+
+packages = [
+    'genastack',
+    'genastack.arguments',
+    'genastack.common',
+    'genastack.roles'
+]
+for mod, name, package in pkgutil.iter_modules(roles.__path__):
+    packages.append('genastack.roles.%s' % name)
 
 with open('requirements.txt') as f:
     required = f.read().splitlines()
@@ -36,35 +47,7 @@ setuptools.setup(
     description=info.__description__,
     long_description=LDINFO,
     license='GNU General Public License v3 or later (GPLv3+)',
-    packages=[
-        'genastack',
-        'genastack.arguments',
-        'genastack.common',
-        'genastack.roles',
-        'genastack.roles.base',
-        'genastack.roles.berkeley_db',
-        'genastack.roles.bzip2',
-        'genastack.roles.cinder',
-        'genastack.roles.cinder_all',
-        'genastack.roles.cinder_api',
-        'genastack.roles.cinder_client',
-        'genastack.roles.cinder_scheduler',
-        'genastack.roles.cinder_volume',
-        'genastack.roles.glance',
-        'genastack.roles.glance_all',
-        'genastack.roles.glance_api',
-        'genastack.roles.glance_client',
-        'genastack.roles.glance_registry',
-        'genastack.roles.keystone',
-        'genastack.roles.keystone_all',
-        'genastack.roles.keystone_api',
-        'genastack.roles.keystone_client',
-        'genastack.roles.libvirt',
-        'genastack.roles.mysql_connector',
-        'genastack.roles.openssl',
-        'genastack.roles.postgres_connector',
-        'genastack.roles.python'
-    ],
+    packages=packages,
     url=info.__url__,
     install_requires=required,
     classifiers=[
