@@ -209,6 +209,7 @@ BUILD_DATA = {
             'sg3-utils',
             'libvirt-bin',
             'pm-utils',
+            'libvirt-dev'
         ]
     }
 }
