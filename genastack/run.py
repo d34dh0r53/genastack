@@ -62,7 +62,7 @@ def executable():
                     )
                     print(json.dumps(run_results, indent=4))
                     if args.get('print_only') is False:
-                        host_db.append(method)
+                        utils.update_installed(db=host_db, method=method)
                 else:
                     print('Role [ %s ] is already installed.' % method)
 

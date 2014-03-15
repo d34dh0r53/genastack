@@ -423,10 +423,9 @@ class EngineRunner(object):
 
         :param args: ``list``
         """
+        force = self.args.get('force')
         for req in args:
-            if self.args.get('force') is True:
-                continue
-            elif req in self.install_db:
+            if req in self.install_db and force is False:
                 break
 
             if req in self.run_roles:
@@ -532,5 +531,6 @@ class EngineRunner(object):
                     action(args=self.job_dict.pop(run))
 
         for role in self.run_roles:
-            self.install_db.append(role)
+            utils.update_installed(db=self.install_db, method=role)
+
         return 'success'

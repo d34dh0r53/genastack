@@ -7,6 +7,7 @@
 # details (see GNU General Public License).
 # http://www.gnu.org/licenses/gpl.html
 # =============================================================================
+import datetime
 import errno
 import hashlib
 import httplib
@@ -22,6 +23,15 @@ LOG = logging.getLogger('genastack-common')
 
 
 RAX_BASE = 'openstack'
+
+
+def update_installed(db, method):
+    """Write a method to the installed DB.
+
+    :param db: ``dict``
+    :param method: ``str``
+    """
+    db[method] = str(datetime.datetime.utcnow())
 
 
 def octal_converter(num):
@@ -69,7 +79,7 @@ def dbm_create(db_path, db_name, db_key):
     with Shelve(file_path=database_path) as db:
         host = db.get(db_key)
         if host is None:
-            db[db_key] = []
+            db[db_key] = {}
 
     return database_path
 
