@@ -70,7 +70,6 @@ def dbm_create(db_path, db_name, db_key):
     :param db_path: Path to a directory
     :param db_name: Name of DBM
     """
-
     db_path = os.path.expanduser(db_path)
     if not os.path.exists(db_path):
         os.mkdir(db_path)
@@ -85,6 +84,11 @@ def dbm_create(db_path, db_name, db_key):
 
 
 def get_db_section(dbk, section):
+    """Return a section of the local DBM.
+
+    :param dbk: ``dict``
+    :param section: ``str``
+    """
     db_section = dbk.get(section)
     if db_section is None:
         db_section = dbk[section] = {}
@@ -92,6 +96,14 @@ def get_db_section(dbk, section):
 
 
 def job_status_saver(db_path, db_key, section, args, status):
+    """Open a dbm and write out the status of an action.
+
+    :param db_path: ``str``
+    :param db_key: ``str``
+    :param section: ``str``
+    :param args: ``dict``
+    :param status: ``str``
+    """
     with Shelve(file_path=db_path) as db:
         dbk = db.get(db_key)
         db_section = get_db_section(dbk=dbk, section=section)
@@ -100,6 +112,14 @@ def job_status_saver(db_path, db_key, section, args, status):
 
 
 def load_saved_args(db_path, db_key, section, args):
+    """Return new section from the local DB.
+
+    :param db_path: ``str``
+    :param db_key: ``str``
+    :param section: ``str``
+    :param args: ``dict``
+    :return: ``dict``
+    """
     with Shelve(file_path=db_path) as db:
         dbk = db.get(db_key)
         db_section = get_db_section(dbk=dbk, section=section)
@@ -113,7 +133,6 @@ def load_saved_args(db_path, db_key, section, args):
 
 class Shelve(object):
     """Context Manager for opening and closing access to the DBM."""
-
     def __init__(self, file_path):
         """Set the Path to the DBM to create/Open.
 
@@ -208,7 +227,6 @@ def mkdir_p(path):
 
     :param path: ``str``
     """
-
     try:
         if not os.path.isdir(path):
             os.makedirs(path)
@@ -231,13 +249,11 @@ def md5_checker(md5sum, local_file):
     :param local_file: ``str``
     :return: ``bol``
     """
-
     def calc_hash():
         """Read the hash.
 
         :return data_hash.read():
         """
-
         return data_hash.read(128 * md5.block_size)
 
     if md5sum is None:
