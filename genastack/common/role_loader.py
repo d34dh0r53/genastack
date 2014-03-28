@@ -54,8 +54,8 @@ class RoleLoad(object):
                 method = self.get_method(method=roles, name=name)
                 LOG.info('Loading Role [ %s ]' % name)
                 yield method.BUILD_DATA
-            except Exception:
-                msg = 'role "%s" failed to load correctly' % name
+            except Exception as exp:
+                msg = 'role [ %s ] failed to load, error [ %s ]' % (name, exp)
                 LOG.error(msg)
                 raise genastack.CantContinue(msg)
 
@@ -72,10 +72,10 @@ class RoleLoad(object):
                     LOG.info('Loading Role [ %s ]' % name)
                     return method.BUILD_DATA[self.config_type]
             except Exception:
-                msg = 'role "%s" failed to load correctly' % name
+                msg = 'role [ %s ] failed to load correctly' % name
                 LOG.error(msg)
                 raise genastack.CantContinue(msg)
         else:
-            msg = 'No role "%s" found' % self.config_type
+            msg = 'no role [ %s ] found' % self.config_type
             LOG.warn(msg)
             raise genastack.CantContinue(msg)

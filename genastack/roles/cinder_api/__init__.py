@@ -7,11 +7,6 @@
 # details (see GNU General Public License).
 # http://www.gnu.org/licenses/gpl.html
 # =============================================================================
-from genastack.common import utils
-
-
-BIN_PATH = utils.return_rax_dir('bin')
-
 
 BUILD_DATA = {
     'cinder_api': {
@@ -25,7 +20,6 @@ BUILD_DATA = {
             {
                 'help': 'Start and stop cinder api on boot',
                 'init_path': '/etc/init.d',
-                'bin_path': BIN_PATH,
                 'name': 'cinder-api',
                 'chuid': 'cinder',
                 'options': '--'

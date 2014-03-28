@@ -14,7 +14,7 @@ from genastack.common import utils
 
 TEMP_PATH = utils.return_temp_dir()
 WORK_PATH = utils.return_rax_dir()
-LIBS_PATH = utils.return_rax_dir(path='lib')
+LIBS_PATH = utils.return_rax_dir(path='openstack/lib')
 
 
 _URL = 'http://dev.mysql.com/get/Downloads/Connector-C'

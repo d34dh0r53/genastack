@@ -13,10 +13,11 @@ import os
 import stat
 import sys
 
+import genastack
 from genastack import info
 
 
-LOG = logging.getLogger('genastack-common')
+LOG = logging.getLogger('genastack-system')
 
 
 def is_int(value):
@@ -38,9 +39,26 @@ class ConfigurationSetup(object):
     """
     def __init__(self):
         self.args = {}
-        self.config_file = os.path.join(
-            '/etc', info.__appname__, 'genastack.conf'
-        )
+        # System configuration file
+        sys_config = os.path.join('/etc', info.__appname__, 'genastack.conf')
+
+        # User configuration file
+        home = os.getenv('HOME')
+        user_config = os.path.join(home, 'genastack.conf')
+
+        if os.path.exists(user_config):
+            self.config_file = user_config
+        elif os.path.exists(sys_config):
+            self.config_file = sys_config
+        else:
+            msg = (
+                'Configuration file for genastack was not found. Valid'
+                ' configuration files are [ %s ] or [ %s ]'
+                % (user_config, sys_config)
+            )
+            LOG.error(msg)
+            raise genastack.CantContinue(msg)
+
         self.check_perms()
 
     def check_perms(self):

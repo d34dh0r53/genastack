@@ -127,7 +127,7 @@ class EngineRunner(object):
     def _ldconfig(self, args):
         """Create lib links on the system.
 
-        :param: args: ``list``
+        :param: args: ``dict``
         """
         for ld in args:
             contents, local_file = ld.split('=')
@@ -139,30 +139,92 @@ class EngineRunner(object):
     def _pip_install(self, args):
         """Install Python Packages with pip.
 
-        :param kwargs: ``dict``
+        :param args: ``dict``
         """
-        bin_path = utils.return_rax_dir(path='bin')
-        pip_command = os.path.join(bin_path, 'pip')
-        pip_install_all = ['%s install %s' % (pip_command, p) for p in args]
+        pip_install_all = ['pip install %s' % p for p in args]
         self.__execute_command(commands=pip_install_all)
+
+    def _git_install(self, args):
+        """Install Python Software from Git.
+
+        While we could do this with "pip" we are providing the ability to copy
+        default configuration and or exampls in place, thus raw "pip" is not
+        the better choice.
+
+        example = {
+            'project_url': PROJECT_URL,
+            'branch': BRANCH,
+            'config_example': ['etc/nova=/etc/nova'],
+        }
+
+        :param args: ``dict``
+        """
+        def configure_repo():
+            if 'config_example' in args:
+                relative, full = args['config_example']
+                file_lists = [
+                    os.path.join(root, file_name)
+                    for root, source, file_name in os.walk(relative)
+                ]
+                all_files = [
+                    os.path.join(index[0], file_name)
+                    for index in file_lists
+                    for file_name in index[1]
+                ]
+                create_files = []
+                for file in all_files:
+                    local = os.path.join(relative, file)
+                    dest = os.path.join(full, file)
+                    if not os.path.exists(dest):
+                        # Open local file and read it
+                        with open(local, 'rb') as f:
+                            file_create = {
+                                'path': full,
+                                'name': file,
+                                'contents': f.read(),
+                                'group': args.get('group_owner', 'root'),
+                                'user': args.get('user_owner', 'root'),
+                                'mode': args.get('mode', '0644')
+                            }
+                        create_files.append(file_create)
+                else:
+                    self._file_create(args=create_files)
+
+        cwd = os.getcwd()
+        try:
+            for repo in args:
+                name = repo['name']
+                temp_dir = utils.return_temp_dir()
+                os.chdir(temp_dir)
+
+                git_clone = 'git clone -b "%s" "%s" "%s"' % (
+                    repo['branch'], repo['project_url'], name
+                )
+                self.__execute_command(commands=[git_clone])
+                clone_path = os.path.join(temp_dir, name)
+                os.chdir(clone_path)
+                configure_repo()
+                commands = ['python setup.py install']
+                self.__execute_command(commands=commands)
+        finally:
+            os.chdir(cwd)
 
     def _init_script(self, args):
         """Place a generic init script on the system.
 
-        :param args: ``list``
+        :param args: ``dict``
         """
         for script in args:
             name = script['program']
-            full_path = os.path.join(script['bin_path'], name)
-            script['bin'] = full_path
-            script['exec'] = ' '.join([full_path, script.get('options', '')])
+            script['bin'] = name
+            script['exec'] = ' '.join(['${DAEMON}', script.get('options', '')])
             script['pid_file'] = '/var/run/%s.pid' % name
 
             ssd = [
                 '--start',
                 '--background',
                 '--make-pidfile',
-                '--pidfile %(pid_file)s'
+                '--pidfile ${PID_FILE}'
             ]
 
             if 'chuid' in script:
@@ -189,8 +251,11 @@ class EngineRunner(object):
             if distro == 'apt_packages':
                 command = ['update-rc.d %(name)s defaults' % script]
             elif distro == 'yum_packages':
+                command = ['chkconfig on %(name)s' % script]
                 #TODO(kevin) Support RHEL
                 raise genastack.CantContinue('No RHEL Support at this time.')
+            else:
+                raise genastack.CantContinue('Unkown Init System...')
 
             self.__execute_command(commands=command)
 
@@ -252,7 +317,7 @@ class EngineRunner(object):
     def _build(self, args):
         """Confirm a package needs to be install, if so go to the compiler.
 
-        :param: args: ``list``
+        :param: args: ``dict``
         """
 
         for build in args:
@@ -264,7 +329,7 @@ class EngineRunner(object):
 
         If the path to the file does not exist, the path will be created.
 
-        :param: args: ``list``
+        :param: args: ``dict``
         """
         for group_create in args:
             try:
@@ -293,7 +358,7 @@ class EngineRunner(object):
 
         If the path to the file does not exist, the path will be created.
 
-        :param: args: ``list``
+        :param: args: ``dict``
         """
         for user_create in args:
             username = user_create.get('user')
@@ -342,7 +407,7 @@ class EngineRunner(object):
 
         If the path to the file does not exist, the path will be created.
 
-        :param: args: ``list``
+        :param: args: ``dict``
         """
         for file_create in args:
             path = file_create['path']
@@ -358,8 +423,8 @@ class EngineRunner(object):
                     file_create['url'] = file_create['from_remote']
                     self.__get(kwargs=file_create)
                 elif 'contents' in file_create:
-                    with open(file_path, 'wb') as local_file:
-                        local_file.write(file_create['contents'])
+                    with open(file_path, 'wb') as f:
+                        f.write(file_create['contents'])
                 else:
                     raise genastack.CantContinue('no file to create')
 
@@ -371,7 +436,7 @@ class EngineRunner(object):
     def _directories(self, args, mode_if=None):
         """Create local directories on the system.
 
-        :param: args: ``list``
+        :param: args: ``dict``
         :param: mode_if: ``int``
         """
         for directory in args:
@@ -399,6 +464,16 @@ class EngineRunner(object):
             )
 
     def _yum_packages(self, args):
+        """Install operating system packages for the system.
+
+        :param: kwargs: ``dict``
+        """
+        packages = ' '.join(args)
+        # yum_install = 'yum -y install %s' % packages
+        # commands = [yum_install]
+        LOG.info('Installing Packages [ %s ]', packages)
+        # self.__execute_command(commands=commands)
+
         #TODO(kevin) Support RHEL
         raise genastack.CantContinue('No RHEL Support at this time.')
 
@@ -422,6 +497,7 @@ class EngineRunner(object):
         """Populate all required roles in the required_roles ``list``.
 
         :param args: ``list``
+        :param pop: ``str``
         """
         force = self.args.get('force')
         for req in args:
@@ -450,36 +526,6 @@ class EngineRunner(object):
             else:
                 self.job_dict[k].append(v)
 
-    def _python_venv(self, args):
-        """Build a Python Virtual Environment.
-
-        :param args: ``list``
-        """
-        commands = []
-        for venv in args:
-            venv_commands = ['virtualenv']
-            if 'options' in venv:
-                venv_commands.append(venv['options'])
-
-            venv_path = venv.get('path', '/opt/openstack')
-            venv_commands.append(venv_path)
-            commands.append(' '.join(venv_commands))
-
-            venv_name = '%s_venv.sh' % venv_path.replace('/', '_')
-            venv_activate = os.path.join(venv_path, 'bin/activate')
-            if venv.get('make_default', False) is True:
-                source_env = {
-                    'path': venv_name,
-                    'name': '/etc/profile.d',
-                    'contents': 'source %s' % venv_activate,
-                    'user': 'root',
-                    'group': 'root',
-                    'mode': '0755'
-                }
-                self._file_create(args=[source_env])
-
-        self.__execute_command(commands=commands)
-
     def _execute(self, args):
         """Execute some raw commands.
 
@@ -487,7 +533,7 @@ class EngineRunner(object):
         """
         self.__execute_command(commands=args)
 
-    def run(self, init_items, install_db):
+    def run(self, init_items, install_db, service_name='openstack'):
         """Run the method.
 
         :param init_items: ``dict``
@@ -504,7 +550,7 @@ class EngineRunner(object):
             libs_list = self.job_dict.pop('libs')
             self.get_required(args=libs_list, pop='libs')
 
-        LOG.info('Installation Inforamtion: %s' % self.job_dict.pop('help'))
+        LOG.info('Installation Information: %s', self.job_dict.pop('help'))
         if self.args.get('print_only') is True:
             return self.job_dict
 
@@ -517,8 +563,8 @@ class EngineRunner(object):
             'build',
             'ldconfig',
             'remote_script',
-            'python_venv',
             'pip_install',
+            'git_install',
             'init_script',
             'execute'
         ]

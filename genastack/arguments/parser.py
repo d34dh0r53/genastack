@@ -19,7 +19,7 @@ def argument_parser():
     parser = argparse.ArgumentParser(
         usage='%(prog)s',
         description='Rackspace Embeded Openstack System Installer',
-        epilog='Licensed UNKNOWN')
+        epilog='Licensed GPLv3+')
 
     args = arguments.DEFAULT_ARGS.items()
     for arg, items in args:

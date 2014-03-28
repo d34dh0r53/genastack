@@ -7,24 +7,28 @@
 # details (see GNU General Public License).
 # http://www.gnu.org/licenses/gpl.html
 # =============================================================================
-from genastack.common import utils
+from genastack.common import system_config
 
 
-BIN_PATH = utils.return_rax_dir('bin')
-
-
-BRANCH = '2.17.0'
-
-
-PROJECT_URL = 'https://github.com/openstack'
-CLIENT = '%s/python-novaclient.git' % PROJECT_URL
+CONFIG = system_config.ConfigurationSetup()
+ARGS = CONFIG.config_args(section='keystone')
+BRANCH = ARGS.get('branch', 'master')
+PROJECT_URL = ARGS['project_url']
 
 
 BUILD_DATA = {
     'nova_client': {
+        'use_system_python': ARGS.get('use_system_python', False),
+        'python_venv': {
+            'name': 'nova'
+        },
         'help': 'Install Nova client from upstream, Branch "%s"' % BRANCH,
-        'pip_install': [
-            'git+%s@%s' % (CLIENT, BRANCH)
+        'git_install': [
+            {
+                'name': 'nova_client',
+                'project_url': PROJECT_URL,
+                'branch': BRANCH
+            }
         ]
     }
 }

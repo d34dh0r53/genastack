@@ -7,37 +7,21 @@
 # details (see GNU General Public License).
 # http://www.gnu.org/licenses/gpl.html
 # =============================================================================
-from genastack.common import utils
+from genastack.common import system_config
 
-
-BIN_PATH = utils.return_rax_dir('bin')
-
-
-BRANCH = 'stable/havana'
-
-
-GLANCE_PROJECT = 'https://github.com/openstack/glance.git'
-PROJECT_URL = 'https://raw.github.com/openstack/glance/%s' % BRANCH
-URL_PATH = '%s/etc' % PROJECT_URL
-
-
-GLANCE_REGISTRY_PASTE = '%s/glance-registry-paste.ini' % URL_PATH
-GLANCE_REGISTRY_CONF = '%s/glance-registry.conf' % URL_PATH
-GLANCE_LOGGING_CNF = '%s/logging.cnf.sample' % URL_PATH
-GLANCE_POLICY_JSON = '%s/policy.json' % URL_PATH
-GLANCE_API_PASTE = '%s/glance-api-paste.ini' % URL_PATH
-GLANCE_API_CONF = '%s/glance-api.conf' % URL_PATH
-GLANCE_CACHE_CONF = '%s/glance-cache.conf' % URL_PATH
-GLANCE_SCRUBBER_CONF = '%s/glance-scrubber.conf' % URL_PATH
-GLANCE_SCHEMA_IMAGE_JSON = '%s/schema-image.json' % URL_PATH
-GLANCE_PROPERTY = '%s/property-protections.conf.sample' % URL_PATH
+CONFIG = system_config.ConfigurationSetup()
+ARGS = CONFIG.config_args(section='glance')
+BRANCH = ARGS.get('branch', 'master')
+PROJECT_URL = ARGS['project_url']
 
 
 BUILD_DATA = {
     'glance': {
+        'use_system_python': ARGS.get('use_system_python', False),
         'help': 'Install Glance from upstream Branch "%s"' % BRANCH,
         'required': [
-            'python'
+            'python',
+            'swift_client'
         ],
         'directories': [
             {
@@ -73,91 +57,18 @@ BUILD_DATA = {
                 'system': True
             }
         ],
-        'file_create': [
+        'git_install': [
             {
-                'path': '/etc/glance',
-                'name': 'glance-api-paste.ini',
-                'from_remote': GLANCE_API_PASTE,
-                'user': 'glance',
-                'group': 'glance',
-                'mode': '0644'
-            },
-            {
-                'path': '/etc/glance',
-                'name': 'glance-api.conf',
-                'from_remote': GLANCE_API_CONF,
-                'user': 'glance',
-                'group': 'glance',
-                'mode': '0644'
-            },
-            {
-                'path': '/etc/glance',
-                'name': 'glance-scrubber.conf',
-                'from_remote': GLANCE_SCRUBBER_CONF,
-                'user': 'glance',
-                'group': 'glance',
-                'mode': '0644'
-            },
-            {
-                'path': '/etc/glance',
-                'name': 'glance-cache.conf',
-                'from_remote': GLANCE_CACHE_CONF,
-                'user': 'glance',
-                'group': 'glance',
-                'mode': '0644'
-            },
-            {
-                'path': '/etc/glance',
-                'name': 'glance-registry-paste.ini',
-                'from_remote': GLANCE_REGISTRY_PASTE,
-                'user': 'glance',
-                'group': 'glance',
-                'mode': '0644'
-            },
-            {
-                'path': '/etc/glance',
-                'name': 'glance-registry.conf',
-                'from_remote': GLANCE_REGISTRY_CONF,
-                'user': 'glance',
-                'group': 'glance',
-                'mode': '0644'
-            },
-            {
-                'path': '/etc/glance',
-                'name': 'logging.cnf',
-                'from_remote': GLANCE_LOGGING_CNF,
-                'user': 'glance',
-                'group': 'glance',
-                'mode': '0644'
-            },
-            {
-                'path': '/etc/glance',
-                'name': 'policy.json',
-                'from_remote': GLANCE_POLICY_JSON,
-                'user': 'glance',
-                'group': 'glance',
-                'mode': '0644'
-            },
-            {
-                'path': '/etc/glance',
-                'name': 'schema-image.json',
-                'from_remote': GLANCE_SCHEMA_IMAGE_JSON,
-                'user': 'glance',
-                'group': 'glance',
-                'mode': '0644'
-            },
-            {
-                'path': '/etc/glance',
-                'name': 'property-protections.conf',
-                'from_remote': GLANCE_PROPERTY,
-                'user': 'glance',
-                'group': 'glance',
+                'name': 'glance',
+                'project_url': PROJECT_URL,
+                'branch': BRANCH,
+                'config_example': 'etc/glance=/etc/glance',
+                'group_owner': 'glance',
+                'user_owner': 'glance',
                 'mode': '0644'
             }
         ],
         'pip_install': [
-            'git+%s@%s' % (GLANCE_PROJECT, BRANCH),
-            'python-swiftclient',
             'warlock'
         ],
         'apt_packages': [

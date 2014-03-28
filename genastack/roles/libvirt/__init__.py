@@ -14,8 +14,8 @@ from genastack.common import utils
 
 TEMP_PATH = utils.return_temp_dir()
 WORK_PATH = utils.return_rax_dir()
-LIBS_PATH = utils.return_rax_dir(path='lib')
-INCLUDE_PATH = utils.return_rax_dir(path='include')
+LIBS_PATH = utils.return_rax_dir(path='openstack/lib')
+INCLUDE_PATH = utils.return_rax_dir(path='openstack/include')
 
 
 LIBVIRT_URL = 'http://libvirt.org/sources/libvirt-1.2.2.tar.gz'

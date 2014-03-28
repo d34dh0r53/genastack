@@ -24,11 +24,12 @@ INIT_SCRIPT = """#! /usr/bin/env bash
 
 set -e
 
-DAEMON="%(bin)s"
+export PATH="${PATH}"
+
+DAEMON="$(which %(bin)s)"
 PID_FILE="%(pid_file)s"
 
 source /lib/lsb/init-functions
-export PATH="${PATH:+$PATH:}/usr/sbin:/sbin"
 
 program_start() {
     if start-stop-daemon %(start_stop_daemon)s; then

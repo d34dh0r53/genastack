@@ -7,30 +7,19 @@
 # details (see GNU General Public License).
 # http://www.gnu.org/licenses/gpl.html
 # =============================================================================
-from genastack.common import utils
+
+from genastack.common import system_config
 
 
-BIN_PATH = utils.return_rax_dir('bin')
-
-
-BRANCH = 'stable/havana'
-
-
-CINDER_PROJECT = 'https://github.com/openstack/cinder.git'
-PROJECT_URL = 'https://raw.github.com/openstack/cinder/%s' % BRANCH
-URL_PATH = '%s/etc/cinder' % PROJECT_URL
-
-
-CINDER_API_PASTE = '%s/api-paste.ini' % URL_PATH
-CINDER_CONF = '%s/cinder.conf.sample' % URL_PATH
-CINDER_LOGGING_CONF = '%s/logging_sample.conf' % URL_PATH
-CINDER_POLICY_JSON = '%s/policy.json' % URL_PATH
-CINDER_ROOTWRAP_CONF = '%s/rootwrap.conf' % URL_PATH
-CINDER_ROOTWRAP_VOLUME = '%s/rootwrap.d/volume.filters' % URL_PATH
+CONFIG = system_config.ConfigurationSetup()
+ARGS = CONFIG.config_args(section='cinder')
+BRANCH = ARGS.get('branch', 'master')
+PROJECT_URL = ARGS['project_url']
 
 
 BUILD_DATA = {
     'cinder': {
+        'use_system_python': ARGS.get('use_system_python', False),
         'help': 'Install cinder from upstream Branch "%s"' % BRANCH,
         'required': [
             'python'
@@ -87,58 +76,18 @@ BUILD_DATA = {
                 'system': True
             }
         ],
-        'file_create': [
+        'git_install': [
             {
-                'path': '/etc/cinder',
-                'name': 'api-paste.ini',
-                'from_remote': CINDER_API_PASTE,
-                'user': 'cinder',
-                'group': 'cinder',
-                'mode': '0644'
-            },
-            {
-                'path': '/etc/cinder',
-                'name': 'cinder.conf',
-                'from_remote': CINDER_CONF,
-                'user': 'cinder',
-                'group': 'cinder',
-                'mode': '0644'
-            },
-            {
-                'path': '/etc/cinder',
-                'name': 'logging.conf',
-                'from_remote': CINDER_LOGGING_CONF,
-                'user': 'cinder',
-                'group': 'cinder',
-                'mode': '0644'
-            },
-            {
-                'path': '/etc/cinder',
-                'name': 'policy.json',
-                'from_remote': CINDER_POLICY_JSON,
-                'user': 'cinder',
-                'group': 'cinder',
-                'mode': '0644'
-            },
-            {
-                'path': '/etc/cinder',
-                'name': 'rootwrap.conf',
-                'from_remote': CINDER_ROOTWRAP_CONF,
-                'user': 'cinder',
-                'group': 'cinder',
-                'mode': '0644'
-            },
-            {
-                'path': '/etc/cinder',
-                'name': 'rootwrap.d/volume.filters',
-                'from_remote': CINDER_ROOTWRAP_VOLUME,
-                'user': 'cinder',
-                'group': 'cinder',
+                'name': 'cinder',
+                'project_url': PROJECT_URL,
+                'branch': BRANCH,
+                'config_example': 'etc/cinder=/etc/cinder',
+                'group_owner': 'cinder',
+                'user_owner': 'cinder',
                 'mode': '0644'
             }
         ],
         'pip_install': [
-            'git+%s@%s' % (CINDER_PROJECT, BRANCH),
             '--allow-all-external pywbem'
         ],
         'apt_packages': [

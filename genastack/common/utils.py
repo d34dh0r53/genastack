@@ -22,9 +22,6 @@ import genastack
 LOG = logging.getLogger('genastack-common')
 
 
-RAX_BASE = 'openstack'
-
-
 def update_installed(db, method):
     """Write a method to the installed DB.
 
@@ -48,9 +45,9 @@ def return_rax_dir(path=None):
     :return: ``str``
     """
     if path is None:
-        return os.path.join('/opt', RAX_BASE)
+        return os.path.join('/opt')
     else:
-        return os.path.join('/opt', RAX_BASE, path)
+        return os.path.join('/opt', path)
 
 
 def return_temp_dir():
@@ -59,7 +56,7 @@ def return_temp_dir():
     :return: ``str``
     """
     temp = tempfile.gettempdir()
-    rax = os.path.join(temp, '%s_build' % RAX_BASE)
+    rax = os.path.join(temp, 'genastack_build')
     mkdir_p(rax)
     return tempfile.mkdtemp(prefix='build_temp_', dir=rax)
 

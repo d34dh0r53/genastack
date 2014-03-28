@@ -7,32 +7,18 @@
 # details (see GNU General Public License).
 # http://www.gnu.org/licenses/gpl.html
 # =============================================================================
-import os
-
 from genastack.common import utils
 
 
 TEMP_PATH = utils.return_temp_dir()
-WORK_PATH = utils.return_rax_dir()
-BIN_PATH = utils.return_rax_dir(path='bin')
 
 
-PYTHON_URL = 'http://www.python.org/ftp/python/2.7.6/Python-2.7.6.tgz'
 PIP_URL = 'https://raw.github.com/pypa/pip/master/contrib/get-pip.py'
-
-
-RAX_SOURCE_SCRIPT = """
-#!/usr/bin/env bash
-VENV_PATH="%s"
-if [[ -f "${VENV_PATH}" ]]; then
-  source ${VENV_PATH}
-fi
-""" % os.path.join(BIN_PATH, 'activate')
 
 
 BUILD_DATA = {
     'python': {
-        'help': 'Install Python.',
+        'help': 'Configure Python.',
         'required': [
             'base'
         ],
@@ -45,27 +31,11 @@ BUILD_DATA = {
                     'name': 'get-pip.py',
                     'uncompress': False
                 },
-                'not_if_exists': os.path.join(BIN_PATH, 'pip'),
                 'interpreter': 'python',
             }
         ],
         'pip_install': [
-            'bz2file',
-            'd2to1',
-            'distribute',
-            'mysql-python',
-            'pbr',
-            'pysqlite',
-            'virtualenv',
-            'pep8',
-            'flake8',
-            'hacking',
-            'iso8601',
-            'lockfile',
-            'amqplib',
-            'kombu',
-            'psycopg2',
-            'sqlalchemy'
+            'virtualenv'
         ],
         'apt_packages': [
             'zlib1g-dev',
@@ -97,15 +67,6 @@ BUILD_DATA = {
             'libffi-dev',
             'python-libvirt',
             'python-dev'
-        ],
-        'python_venv': [
-            {
-                'path': '/opt/openstack',
-                'options': '--system-site-packages'
-            }
-        ],
-        'execute': [
-            'virtualenv --system-site-packages %s' % BIN_PATH
         ]
     }
 }

@@ -8,7 +8,6 @@
 # http://www.gnu.org/licenses/gpl.html
 # =============================================================================
 
-
 BUILD_DATA = {
     'keystone_all': {
         'help': 'Install all of Keystone from upstream',

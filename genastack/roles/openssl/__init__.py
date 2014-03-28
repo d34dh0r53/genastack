@@ -12,7 +12,7 @@ from genastack.common import utils
 
 TEMP_PATH = utils.return_temp_dir()
 WORK_PATH = utils.return_rax_dir()
-OPENSSL_PATH = utils.return_rax_dir(path='openssl')
+OPENSSL_PATH = utils.return_rax_dir(path='openstack/openssl')
 
 
 OPEN_SSL_URL = 'http://www.openssl.org/source/openssl-1.0.1f.tar.gz'

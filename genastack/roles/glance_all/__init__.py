@@ -8,7 +8,6 @@
 # http://www.gnu.org/licenses/gpl.html
 # =============================================================================
 
-
 BUILD_DATA = {
     'glance_all': {
         'help': 'Install all of Glance from upstream',

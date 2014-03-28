@@ -7,29 +7,18 @@
 # details (see GNU General Public License).
 # http://www.gnu.org/licenses/gpl.html
 # =============================================================================
-from genastack.common import utils
+from genastack.common import system_config
 
 
-BIN_PATH = utils.return_rax_dir('bin')
-
-
-BRANCH = 'stable/havana'
-
-
-KEYSTONE_PROJECT = 'https://github.com/openstack/keystone.git'
-PROJECT_URL = 'https://raw.github.com/openstack/keystone/%s' % BRANCH
-URL_PATH = '%s/etc' % PROJECT_URL
-
-
-KEYSTONE_CONF = '%s/keystone.conf.sample' % URL_PATH
-KEYSTONE_PASTE = '%s/keystone-paste.ini' % URL_PATH
-KEYSTONE_LOGGING = '%s/logging.conf.sample' % URL_PATH
-KEYSTONE_POLICY_JSON = '%s/policy.json' % URL_PATH
-KEYSTONE_POLICY_JSON_V3API = '%s/policy.v3cloudsample.json' % URL_PATH
+CONFIG = system_config.ConfigurationSetup()
+ARGS = CONFIG.config_args(section='keystone')
+BRANCH = ARGS.get('branch', 'master')
+PROJECT_URL = ARGS['project_url']
 
 
 BUILD_DATA = {
     'keystone': {
+        'use_system_python': ARGS.get('use_system_python', False),
         'help': 'Install Keystone from upstream on Branch "%s"' % BRANCH,
         'required': [
             'python'
@@ -74,58 +63,36 @@ BUILD_DATA = {
                 'system': True
             }
         ],
-        'file_create': [
+        'git_install': [
             {
-                'path': '/etc/keystone',
-                'name': 'keystone.conf',
-                'from_remote': KEYSTONE_CONF,
-                'user': 'keystone',
-                'group': 'keystone',
-                'mode': '0644'
-            },
-            {
-                'path': '/etc/keystone',
-                'name': 'keystone-paste.ini',
-                'from_remote': KEYSTONE_PASTE,
-                'user': 'keystone',
-                'group': 'keystone',
-                'mode': '0644'
-            },
-            {
-                'path': '/etc/keystone',
-                'name': 'logging.conf.sample',
-                'from_remote': KEYSTONE_LOGGING,
-                'user': 'keystone',
-                'group': 'keystone',
-                'mode': '0644'
-            },
-            {
-                'path': '/etc/keystone',
-                'name': 'policy.json',
-                'from_remote': KEYSTONE_POLICY_JSON,
-                'user': 'keystone',
-                'group': 'keystone',
-                'mode': '0644'
-            },
-            {
-                'path': '/etc/keystone',
-                'name': 'policy.v3cloudsample.json',
-                'from_remote': KEYSTONE_POLICY_JSON_V3API,
-                'user': 'keystone',
-                'group': 'keystone',
+                'name': 'keystone',
+                'project_url': PROJECT_URL,
+                'branch': BRANCH,
+                'config_example': 'etc/keystone=/etc/keystone',
+                'group_owner': 'keystone',
+                'user_owner': 'keystone',
                 'mode': '0644'
             }
         ],
         'pip_install': [
-            'git+%s@%s' % (KEYSTONE_PROJECT, BRANCH)
+            'repoze.lru',
+            'pbr',
+            'mysql-python'
         ],
         'apt_packages': [
-            'libsasl2-dev',
-            'debhelper',
+            'mysql-client',
+            'libmysqlclient-dev',
+            'libsasl2-dev debhelper',
             'dh-apparmor',
             'docutils-common',
             'libjs-sphinxdoc',
-            'libjs-underscore'
+            'libjs-underscore',
+            'libxslt1.1',
+            'libxslt1-dev',
+            'libxml2-dev',
+            'libssl-dev',
+            'libldap2-dev',
+            'libffi-dev'
         ]
     }
 }

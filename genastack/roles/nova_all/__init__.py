@@ -8,7 +8,6 @@
 # http://www.gnu.org/licenses/gpl.html
 # =============================================================================
 
-
 BUILD_DATA = {
     'nova_all': {
         'help': 'Install all of Nova Compute from upstream',

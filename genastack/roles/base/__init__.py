@@ -13,10 +13,10 @@ from genastack.common import utils
 
 TEMP_PATH = utils.return_temp_dir()
 WORK_PATH = utils.return_rax_dir()
-LIBS_PATH = utils.return_rax_dir(path='lib')
-LIBEXEC_PATH = utils.return_rax_dir(path='libexec')
-BIN_PATH = utils.return_rax_dir(path='bin')
-SBIN_PATH = utils.return_rax_dir(path='sbin')
+LIBS_PATH = utils.return_rax_dir(path='openstack/lib')
+LIBEXEC_PATH = utils.return_rax_dir(path='openstack/libexec')
+BIN_PATH = utils.return_rax_dir(path='openstack/bin')
+SBIN_PATH = utils.return_rax_dir(path='openstack/sbin')
 
 
 BZIP_URL = 'http://www.bzip.org/1.0.6/bzip2-1.0.6.tar.gz'

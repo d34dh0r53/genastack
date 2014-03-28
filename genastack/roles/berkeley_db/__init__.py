@@ -12,7 +12,7 @@ from genastack.common import utils
 
 TEMP_PATH = utils.return_temp_dir()
 WORK_PATH = utils.return_rax_dir()
-LIBS_PATH = utils.return_rax_dir(path='lib')
+LIBS_PATH = utils.return_rax_dir(path='openstack/lib')
 
 
 BDBM_URL = 'http://download.oracle.com/berkeley-db/db-6.0.30.tar.gz'

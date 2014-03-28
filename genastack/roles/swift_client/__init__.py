@@ -7,24 +7,24 @@
 # details (see GNU General Public License).
 # http://www.gnu.org/licenses/gpl.html
 # =============================================================================
+from genastack.common import system_config
+
+
+CONFIG = system_config.ConfigurationSetup()
+ARGS = CONFIG.config_args(section='swift_client')
+BRANCH = ARGS.get('branch', 'master')
+PROJECT_URL = ARGS['project_url']
+
 
 BUILD_DATA = {
-    'nova_cert': {
-        'help': 'Install nova cert from upstream',
-        'required': [
-            'nova'
-        ],
-        'init_script': [
-            {
-                'help': 'Start and stop nova on boot',
-                'init_path': '/etc/init.d',
-                'name': 'nova',
-                'chuid': 'nova',
-                'chdir': '/var/lib/nova',
-                'options': '--'
-                           ' --config-file=/etc/nova/nova.conf',
-                'program': 'nova-cert'
-            }
+    'keystone_client': {
+        'use_system_python': ARGS.get('use_system_python', False),
+        'python_venv': {
+            'name': 'swift'
+        },
+        'help': 'Install Swift client from upstream, Branch "%s"' % BRANCH,
+        'pip_install': [
+            'git+%s@%s' % (PROJECT_URL, BRANCH)
         ]
     }
 }
