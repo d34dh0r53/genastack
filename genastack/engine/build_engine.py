@@ -187,8 +187,8 @@ class EngineRunner(object):
                                 'mode': args.get('mode', '0644')
                             }
                         create_files.append(file_create)
-                else:
-                    self._file_create(args=create_files)
+
+                self._file_create(args=create_files)
 
         cwd = os.getcwd()
         try:
@@ -197,14 +197,17 @@ class EngineRunner(object):
                 temp_dir = utils.return_temp_dir()
                 os.chdir(temp_dir)
 
-                git_clone = 'git clone -b "%s" "%s" "%s"' % (
-                    repo['branch'], repo['project_url'], name
-                )
-                self.__execute_command(commands=[git_clone])
+                git_setup = [
+                    'git clone "%s" "%s"' % (repo['project_url'], name),
+                ]
+                self.__execute_command(commands=git_setup)
                 clone_path = os.path.join(temp_dir, name)
                 os.chdir(clone_path)
                 configure_repo()
-                commands = ['python setup.py install']
+                commands = [
+                    'git checkout %s' % repo['branch'],
+                    'python setup.py install'
+                ]
                 self.__execute_command(commands=commands)
         finally:
             os.chdir(cwd)
