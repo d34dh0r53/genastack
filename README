@@ -4,15 +4,44 @@ Genastack Openstack Installer
 :tags: rackspace, openstack, dev
 :category: \*nix
 
-Build Openstack in a Contained Application. This utility will Compile the necessary bits and install the rest.
+Build Openstack in a Contained Application. This utility will Compile the
+necessary bits and install the rest.
 
-The approach here is to install all of openstack from upstream git. This will allow you to install Openstack from a stable SHA/Branch/Tag.
+The approach here is to install all of openstack from upstream git. This will
+allow you to install Openstack from a stable SHA/Branch/Tag.
+
+
+Installation
+^^^^^^^^^^^^
+
+Clone the repository, run setup. Once installed, either create or copy the
+example genastack.conf file to either your home directory or to the directory
+``/etc/genastack``.
+
+.. code-block:: bash
+
+    git clone https://github.com/cloudnull/genastack genastack
+    pushd genastack
+    cp example_config/genastack.conf ~/genastack.conf
+    python setup.py install
+    popd
 
 
 Why
-^^^
+---
 
-I built this application so that you, the cloud provider, can install openstack on your system without having to add third party repos and or installing packages on your system which are subject to constant change. Additionally it has been my experience that packages produced by upstream package providers have been fraught with peril. Additionally most of these packages make assumptions about how to setup the system, where to place files, and what the user is going to want to have available.  When using **Genastack** the application will install the needed Openstack bits, place the service related configuration files in ``/etc/`` from what is provided in the upstream examples.  **Genastack** only uses the detected operating systems package manager for installing libs, the application does all of the rest of the installation from the sources found within the roles.
+I built this application so that you, the cloud provider, can install openstack
+on your system without having to add third party repos and or installing
+packages on your system which are subject to constant change. Additionally it
+has been my experience that packages produced by upstream package providers
+have been fraught with peril. Additionally most of these packages make
+assumptions about how to setup the system, where to place files, and what the
+user is going to want to have available.  When using **Genastack** the
+application will install the needed Openstack bits, place the service related
+configuration files in ``/etc/`` from what is provided in the upstream
+examples.  **Genastack** only uses the detected operating systems package
+manager for installing libs, the application does all of the rest of the
+installation from the sources found within the roles.
 
 
 NOTICE
