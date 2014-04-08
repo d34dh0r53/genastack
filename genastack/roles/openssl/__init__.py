@@ -34,8 +34,8 @@ BUILD_DATA = {
                 'get': {
                     'url': OPEN_SSL_URL,
                     'path': TEMP_PATH,
-                    'name': 'openssl-1.0.1f.tgz',
-                    'md5sum': 'f26b09c028a0541cab33da697d522b25',
+                    'name': 'openssl-1.0.1g.tgz',
+                    'md5sum': 'de62b43dfcd858e66a74bee1c834e959',
                     'uncompress': True
                 },
                 'not_if_exists': OPENSSL_PATH,
