@@ -68,7 +68,7 @@ BUILD_DATA = {
                 'name': 'keystone',
                 'project_url': PROJECT_URL,
                 'branch': BRANCH,
-                'config_example': 'etc/keystone=/etc/keystone',
+                'config_example': 'etc=/etc/keystone',
                 'group_owner': 'keystone',
                 'user_owner': 'keystone',
                 'mode': '0644'
