@@ -72,11 +72,6 @@ BUILD_DATA = {
                 'mode': '0644'
             }
         ],
-        'pip_install': [
-            'mysql-python',
-            'pbr',
-            'qpid-python'
-        ],
         'apt_packages': [
             'mysql-client',
             'libmysqlclient-dev'
