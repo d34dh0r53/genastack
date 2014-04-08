@@ -13,13 +13,17 @@ import json
 from genastack.arguments import parser
 from genastack.common import logger
 from genastack.common import role_loader
+from genastack.common import system_config
 from genastack.common import utils
 from genastack.engine import build_engine
 
 
+# Check to see if our System Config File Exists
+system_config.ConfigurationSetup()
+
+
 def executable(debug=False):
     """Start."""
-    logger.logger_setup(name='genastack-system', debug_logging=debug)
     if len(sys.argv) < 2:
         parser.return_help()
         raise SystemExit('Not command provided.')
@@ -27,7 +31,7 @@ def executable(debug=False):
         args = parser.return_args()
         debug = args.get('debug')
 
-        handlers = ['genastack-common', 'genastack-engine']
+        handlers = ['genastack-system', 'genastack-common', 'genastack-engine']
         for handler in handlers:
             logger.logger_setup(name=handler, debug_logging=debug)
 
