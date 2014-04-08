@@ -22,7 +22,7 @@ from genastack.engine import build_engine
 system_config.ConfigurationSetup()
 
 
-def executable(debug=False):
+def executable():
     """Start."""
     if len(sys.argv) < 2:
         parser.return_help()
