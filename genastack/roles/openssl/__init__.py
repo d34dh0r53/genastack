@@ -15,7 +15,7 @@ WORK_PATH = utils.return_rax_dir()
 OPENSSL_PATH = utils.return_rax_dir(path='openstack/openssl')
 
 
-OPEN_SSL_URL = 'http://www.openssl.org/source/openssl-1.0.1f.tar.gz'
+OPEN_SSL_URL = 'https://www.openssl.org/source/openssl-1.0.1g.tar.gz'
 
 
 INSTALL_COMMANDS = [
