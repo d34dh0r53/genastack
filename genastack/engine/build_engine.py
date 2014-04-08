@@ -160,35 +160,34 @@ class EngineRunner(object):
         :param args: ``dict``
         """
         def configure_repo():
-            if 'config_example' in args:
-                relative, full = args['config_example']
-                file_lists = [
-                    os.path.join(root, file_name)
-                    for root, source, file_name in os.walk(relative)
-                ]
-                all_files = [
-                    os.path.join(index[0], file_name)
-                    for index in file_lists
-                    for file_name in index[1]
-                ]
-                create_files = []
-                for file in all_files:
-                    local = os.path.join(relative, file)
-                    dest = os.path.join(full, file)
-                    if not os.path.exists(dest):
-                        # Open local file and read it
-                        with open(local, 'rb') as f:
-                            file_create = {
-                                'path': full,
-                                'name': file,
-                                'contents': f.read(),
-                                'group': args.get('group_owner', 'root'),
-                                'user': args.get('user_owner', 'root'),
-                                'mode': args.get('mode', '0644')
-                            }
-                        create_files.append(file_create)
+            if 'config_example' in repo:
+                relative, local_path = repo['config_example'].split('=')
+                full_relative_path = os.path.realpath(relative)
+                file_lists = []
+                for root, source, file_name in os.walk(full_relative_path):
+                    for config_file in file_name:
+                        file_lists.append(os.path.join(root, config_file))
 
-                self._file_create(args=create_files)
+                create_files = []
+                LOG.debug('local files found [ %s ]', file_lists)
+                for local_file in file_lists:
+                    # Open local file and read it
+                    file_name = local_file.split(
+                        full_relative_path
+                    )
+                    file_name = file_name[-1].strip(os.sep)
+                    with open(local_file, 'rb') as f:
+                        file_create = {
+                            'path': local_path,
+                            'name': file_name,
+                            'contents': f.read(),
+                            'group': repo.get('group_owner', 'root'),
+                            'user': repo.get('user_owner', 'root'),
+                            'mode': repo.get('mode', '0644')
+                        }
+                    create_files.append(file_create)
+                else:
+                    self._file_create(args=create_files)
 
         cwd = os.getcwd()
         try:
