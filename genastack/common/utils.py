@@ -25,10 +25,14 @@ LOG = logging.getLogger('genastack-common')
 def update_installed(db, method):
     """Write a method to the installed DB.
 
+    If the method name ends with "_all" it will not be written to the
+    installation db.
+
     :param db: ``dict``
     :param method: ``str``
     """
-    db[method] = str(datetime.datetime.utcnow())
+    if not method.endswith('_all'):
+        db[method] = str(datetime.datetime.utcnow())
 
 
 def octal_converter(num):
