@@ -14,6 +14,7 @@ import os
 import platform
 import pwd
 import subprocess
+import shutil
 import tarfile
 
 import genastack
@@ -190,26 +191,26 @@ class EngineRunner(object):
                     self._file_create(args=create_files)
 
         cwd = os.getcwd()
-        try:
-            for repo in args:
+        for repo in args:
+            temp_dir = utils.return_temp_dir()
+            try:
                 name = repo['name']
-                temp_dir = utils.return_temp_dir()
                 os.chdir(temp_dir)
-
                 git_setup = [
                     'git clone "%s" "%s"' % (repo['project_url'], name),
                 ]
                 self.__execute_command(commands=git_setup)
                 clone_path = os.path.join(temp_dir, name)
                 os.chdir(clone_path)
-                configure_repo()
                 commands = [
                     'git checkout %s' % repo['branch'],
                     'python setup.py install'
                 ]
                 self.__execute_command(commands=commands)
-        finally:
-            os.chdir(cwd)
+                configure_repo()
+            finally:
+                os.chdir(cwd)
+                shutil.rmtree(temp_dir)
 
     def _init_script(self, args):
         """Place a generic init script on the system.
@@ -445,7 +446,6 @@ class EngineRunner(object):
                 full_path = os.path.join(path, directory['name'])
                 path = os.path.dirname(full_path)
 
-            print path
             if os.path.isdir(path) is False:
                 utils.mkdir_p(path=path)
                 if mode_if is not None:
@@ -506,30 +506,32 @@ class EngineRunner(object):
         """
         force = self.args.get('force')
         for req in args:
-            if req in self.install_db and force is False:
-                break
-
             if req in self.run_roles:
-                break
-
-            self.run_roles.append(req)
-            requirement = role_loader.RoleLoad(config_type=req).load_role()
-            if pop in requirement:
-                required = requirement.pop(pop)
-                self.get_required(args=required, pop=pop)
-            self.merge_init_items(items=requirement)
+                pass
+            elif req not in self.install_db or force is True:
+                self.run_roles.append(req)
+                _requirement = role_loader.RoleLoad(config_type=req)
+                requirement = _requirement.load_role()
+                if pop in requirement:
+                    required = requirement.pop(pop)
+                    self.get_required(args=required, pop=pop)
+                self.merge_init_items(items=requirement)
+            else:
+                LOG.info('Role [ %s ] already installed', req)
 
     def merge_init_items(self, items):
         """Build the job dict merging the dicts of other resources.
 
         :param items: ``dict``
         """
-        for k, v in items.iteritems():
-            if isinstance(v, list):
-                for i in v:
-                    self.job_dict[k].append(i)
+        for key, value in items.iteritems():
+            if isinstance(value, list):
+                for item in value:
+                    if item not in self.job_dict[key]:
+                        self.job_dict[key].append(item)
             else:
-                self.job_dict[k].append(v)
+                if value not in self.job_dict[key]:
+                    self.job_dict[key].append(value)
 
     def _execute(self, args):
         """Execute some raw commands.
@@ -538,7 +540,7 @@ class EngineRunner(object):
         """
         self.__execute_command(commands=args)
 
-    def run(self, init_items, install_db, service_name='openstack'):
+    def run(self, init_items, install_db):
         """Run the method.
 
         :param init_items: ``dict``
