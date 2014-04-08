@@ -412,9 +412,7 @@ class EngineRunner(object):
         :param: args: ``dict``
         """
         for file_create in args:
-            path = file_create['path']
-            name = file_create['name']
-            file_path = os.path.join(path, name)
+            file_path = os.path.join(file_create['path'], file_create['name'])
             if not os.path.exists(file_path):
                 self._directories(
                     args=[file_create],
@@ -443,6 +441,11 @@ class EngineRunner(object):
         """
         for directory in args:
             path = directory['path']
+            if 'name' in directory:
+                full_path = os.path.join(path, directory['name'])
+                path = os.path.dirname(full_path)
+
+            print path
             if os.path.isdir(path) is False:
                 utils.mkdir_p(path=path)
                 if mode_if is not None:
