@@ -17,14 +17,18 @@ PROJECT_URL = ARGS['project_url']
 
 
 BUILD_DATA = {
-    'keystone_client': {
+    'swift_client': {
         'use_system_python': ARGS.get('use_system_python', False),
         'python_venv': {
             'name': 'swift'
         },
         'help': 'Install Swift client from upstream, Branch "%s"' % BRANCH,
-        'pip_install': [
-            'git+%s@%s' % (PROJECT_URL, BRANCH)
+        'git_install': [
+            {
+                'name': 'swift_client',
+                'project_url': PROJECT_URL,
+                'branch': BRANCH
+            }
         ]
     }
 }
