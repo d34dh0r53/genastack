@@ -29,6 +29,7 @@ def executable(debug=False):
         raise SystemExit('Not command provided.')
     else:
         args = parser.return_args()
+        print args
         debug = args.get('debug')
 
         handlers = ['genastack-system', 'genastack-common', 'genastack-engine']
