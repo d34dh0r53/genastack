@@ -63,6 +63,12 @@ def _run_genastack(method, database_path, args):
             return
 
         role = role_loader.RoleLoad(config_type=method).load_role()
+        if 'required' not in role:
+            role['required'] = [method]
+        else:
+            if method not in role['required']:
+                role['required'].append(method)
+
         # Check to see if the role is installed
         # or if force / print_only are true
         possible_args = [
@@ -76,8 +82,6 @@ def _run_genastack(method, database_path, args):
                 init_items=role, install_db=host_db
             )
             print(json.dumps(run_results, indent=4))
-            if args.get('print_only') is False:
-                utils.update_installed(db=host_db, method=method)
         else:
             print('Role [ %s ] is already installed.' % method)
 
