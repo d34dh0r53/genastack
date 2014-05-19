@@ -9,13 +9,14 @@
 # =============================================================================
 import collections
 import grp
-import logging
 import os
-import platform
 import pwd
-import subprocess
 import shutil
 import tarfile
+
+from cloudlib import logger
+from cloudlib import shell
+from cloudlib import package_installer
 
 import genastack
 from genastack.common import basic_init
@@ -23,7 +24,7 @@ from genastack.common import role_loader
 from genastack.common import utils
 
 
-LOG = logging.getLogger('genastack-engine')
+LOG = logger.getLogger('genastack-engine')
 
 
 class EngineRunner(object):
@@ -34,6 +35,7 @@ class EngineRunner(object):
         self.run_roles = []
         self.install_db = None
         self.job_dict = collections.defaultdict(list)
+        self.shell = shell.ShellCommands(log_name='genastack-engine')
 
     @staticmethod
     def __set_perms(inode, kwargs):
@@ -58,8 +60,7 @@ class EngineRunner(object):
             inode, user, group, _mode
         )
 
-    @staticmethod
-    def __get(kwargs):
+    def __get(self, kwargs):
         """Download a remote file to a local place on the system.
 
         :param kwargs: ``dict``
@@ -74,7 +75,9 @@ class EngineRunner(object):
 
         LOG.info('Downloading [ %s ] to [ %s ]', url, local_path)
         utils.download(url, headers=headers, local_file=local_file)
-        utils.md5_checker(md5sum=kwargs.get('md5sum'), local_file=local_file)
+        self.shell.md5_checker(
+            md5sum=kwargs.get('md5sum'), local_file=local_file
+        )
         if kwargs.get('uncompress') is True:
             local_path = kwargs.get('path')
 
@@ -88,26 +91,13 @@ class EngineRunner(object):
         else:
             return local_path
 
-    def __execute_command(self, commands, env=None, execute='/bin/bash'):
-        """Execute a list of commands.
-
-        All commands executed will check for a return code of non-Zero.
-        If a non-Zero return code is found an exception will be raised.
+    def __execute_command(self, commands, env=None):
+        """Run a list shell commands.
 
         :param commands: ``list``
-        :param env: ``dict``
         """
-
-        if self.args.get('debug'):
-            output = None
-        else:
-            output = open(os.devnull, 'wb')
-
         for command in commands:
-            LOG.info('COMMAND: [ %s ]' % command)
-            subprocess.check_call(
-                command, shell=True, env=env, stdout=output, executable=execute
-            )
+            self.shell.run_command(command=command, env=env)
 
     def __not_if_exists(self, check):
         """Return False if the constraint is Met otherwise return True.
@@ -250,17 +240,15 @@ class EngineRunner(object):
 
             self._file_create(args=[file_create])
 
-            distro = self.__distro_check()
-            if distro == 'apt_packages':
-                command = ['update-rc.d %(name)s defaults' % script]
-            elif distro == 'yum_packages':
-                command = ['chkconfig on %(name)s' % script]
-                #TODO(kevin) Support RHEL
-                raise genastack.CantContinue('No RHEL Support at this time.')
+            distro = package_installer.distro_check()
+            if distro in ['apt']:
+                commands = ['update-rc.d %(name)s defaults' % script]
+            elif distro in ['yum', 'zypper']:
+                commands = ['chkconfig on %(name)s' % script]
             else:
                 raise genastack.CantContinue('Unkown Init System...')
 
-            self.__execute_command(commands=command)
+            self.__execute_command(commands=commands)
 
     def __script_run(self, kwargs):
         """Run a script.
@@ -279,7 +267,7 @@ class EngineRunner(object):
     def _remote_script(self, args):
         """Execute a remote script on the local system.
 
-        :param kwargs: ``dict``
+        :param args: ``dict``
         """
         for script in args:
             if not self.__not_if_exists(check=script):
@@ -386,8 +374,8 @@ class EngineRunner(object):
                     user.append('--create-home --home-dir %(home)s')
 
                 # Set the user shell
-                shell = user_create.get('shell', '/bin/false')
-                user.append('--shell %s' % shell)
+                interpreter = user_create.get('shell', '/bin/false')
+                user.append('--shell %s' % interpreter)
 
                 # Basic user or System user
                 if user_create.get('system') is True:
@@ -447,7 +435,7 @@ class EngineRunner(object):
                 path = os.path.dirname(full_path)
 
             if os.path.isdir(path) is False:
-                utils.mkdir_p(path=path)
+                self.shell.mkdir_p(path=path)
                 if mode_if is not None:
                     directory['mode'] = mode_if
                 elif 'mode' not in directory:
@@ -455,48 +443,16 @@ class EngineRunner(object):
 
                 self.__set_perms(inode=path, kwargs=directory)
 
-    def __distro_check(self):
-        """Return True or False for the detected distro."""
-        distro = platform.linux_distribution()
-        distro = [d.lower() for d in distro]
-        if any(['ubuntu' in distro, 'debian' in distro]) is True:
-            return 'apt_packages'
-        elif any(['centos' in distro, 'redhat' in distro]) is True:
-            return 'yum_packages'
-        else:
-            raise genastack.CantContinue(
-                'Distro [ %s ] is unsupported.' % distro
-            )
+    @staticmethod
+    def package_install(kwargs):
+        """Install of packages based on the system that has been discovered.
 
-    def _yum_packages(self, args):
-        """Install operating system packages for the system.
-
-        :param: kwargs: ``dict``
+        :param kwargs: ``dict``
         """
-        packages = ' '.join(args)
-        # yum_install = 'yum -y install %s' % packages
-        # commands = [yum_install]
-        LOG.info('Installing Packages [ %s ]', packages)
-        # self.__execute_command(commands=commands)
-
-        #TODO(kevin) Support RHEL
-        raise genastack.CantContinue('No RHEL Support at this time.')
-
-    def _apt_packages(self, args):
-        """Install operating system packages for the system.
-
-        :param: kwargs: ``dict``
-        """
-        packages = ' '.join(args)
-        apt_update = 'apt-get update'
-        apt_install = (
-            "apt-get -o Dpkg::Options:='--force-confold'"
-            " -o Dpkg::Options:='--force-confdef'"
-            " install -y %s" % packages
+        installer = package_installer.PackageInstaller(
+            log_name='genastack-engine', packages_dict=kwargs
         )
-        commands = [apt_update, apt_install]
-        LOG.info('Installing Packages [ %s ]', packages)
-        self.__execute_command(commands=commands)
+        installer.install()
 
     def get_required(self, args, pop):
         """Populate all required roles in the required_roles ``list``.
@@ -566,7 +522,7 @@ class EngineRunner(object):
             'user_create',
             'directories',
             'file_create',
-            self.__distro_check(),
+            'package_install',
             'build',
             'ldconfig',
             'remote_script',

@@ -7,19 +7,15 @@
 # details (see GNU General Public License).
 # http://www.gnu.org/licenses/gpl.html
 # =============================================================================
-import sys
 import json
+import sys
+
+from cloudlib import logger
 
 from genastack.arguments import parser
-from genastack.common import logger
 from genastack.common import role_loader
-from genastack.common import system_config
 from genastack.common import utils
 from genastack.engine import build_engine
-
-
-# Check to see if our System Config File Exists
-system_config.ConfigurationSetup()
 
 
 def executable():
@@ -29,12 +25,14 @@ def executable():
         raise SystemExit('Not command provided.')
     else:
         args = parser.return_args()
-        print args
         debug = args.get('debug')
 
+        log = logger.LogSetup(debug_logging=debug)
+
+        # Load the three handlers that are used for genastack logging
         handlers = ['genastack-system', 'genastack-common', 'genastack-engine']
         for handler in handlers:
-            logger.logger_setup(name=handler, debug_logging=debug)
+            log.default_logger(name=handler)
 
         method = args.get('method')
         if method is None:

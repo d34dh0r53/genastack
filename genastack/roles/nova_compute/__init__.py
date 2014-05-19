@@ -27,15 +27,17 @@ BUILD_DATA = {
                 'program': 'nova-compute'
             }
         ],
-        'apt_package': [
-            'open-iscsi',
-            'parted',
-            'qemu-utils',
-            'genisoimage',
-            'vlan',
-            'kpartx',
-            'ebtables',
-            'gawk'
-        ]
+        'package_install': {
+            'apt': [
+                'open-iscsi',
+                'parted',
+                'qemu-utils',
+                'genisoimage',
+                'vlan',
+                'kpartx',
+                'ebtables',
+                'gawk'
+            ]
+        }
     }
 }

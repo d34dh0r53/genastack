@@ -8,10 +8,10 @@
 # http://www.gnu.org/licenses/gpl.html
 # =============================================================================
 
-from genastack.common import system_config
+from cloudlib import parse_ini
 
-
-CONFIG = system_config.ConfigurationSetup()
+# Check to see if our System Config File Exists
+CONFIG = parse_ini.ConfigurationSetup(log_name='genastack-system')
 ARGS = CONFIG.config_args(section='cinder')
 BRANCH = ARGS.get('branch', 'master')
 PROJECT_URL = ARGS['project_url']
@@ -90,13 +90,15 @@ BUILD_DATA = {
         'pip_install': [
             '--allow-all-external pywbem'
         ],
-        'apt_packages': [
-            'lvm2',
-            'tgt',
-            'open-iscsi',
-            'qemu-utils',
-            'sysfsutils',
-            'nfs-common'
-        ]
+        'package_install': {
+            'apt': [
+                'lvm2',
+                'tgt',
+                'open-iscsi',
+                'qemu-utils',
+                'sysfsutils',
+                'nfs-common'
+            ]
+        }
     }
 }

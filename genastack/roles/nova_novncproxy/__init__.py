@@ -26,9 +26,11 @@ BUILD_DATA = {
                 'program': 'nova-novncproxy'
             }
         ],
-        'apt_package': [
-            'novnc',
-            'websockify'
-        ]
+        'package_install': {
+            'apt': [
+                'novnc',
+                'websockify'
+            ]
+        }
     }
 }

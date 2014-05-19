@@ -8,14 +8,18 @@
 # http://www.gnu.org/licenses/gpl.html
 # =============================================================================
 from genastack.common import utils
+from cloudlib import parse_ini
 
+# Check to see if our System Config File Exists
+CONFIG = parse_ini.ConfigurationSetup(log_name='genastack-system')
+ARGS = CONFIG.config_args(section='openssl')
+PROJECT_URL = ARGS.get(
+    'project_url', 'http://www.openssl.org/source/openssl-1.0.1g.tar.gz'
+)
 
 TEMP_PATH = utils.return_temp_dir()
 WORK_PATH = utils.return_rax_dir()
 OPENSSL_PATH = utils.return_rax_dir(path='openstack/openssl')
-
-
-OPEN_SSL_URL = 'https://www.openssl.org/source/openssl-1.0.1g.tar.gz'
 
 
 INSTALL_COMMANDS = [
@@ -32,7 +36,7 @@ BUILD_DATA = {
         'build': [
             {
                 'get': {
-                    'url': OPEN_SSL_URL,
+                    'url': PROJECT_URL,
                     'path': TEMP_PATH,
                     'name': 'openssl-1.0.1g.tgz',
                     'md5sum': 'de62b43dfcd858e66a74bee1c834e959',

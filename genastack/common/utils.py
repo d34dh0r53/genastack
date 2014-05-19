@@ -8,8 +8,6 @@
 # http://www.gnu.org/licenses/gpl.html
 # =============================================================================
 import datetime
-import errno
-import hashlib
 import httplib
 import logging
 import os
@@ -17,7 +15,7 @@ import shelve
 import tempfile
 import urlparse
 
-import genastack
+from cloudlib import shell
 
 LOG = logging.getLogger('genastack-common')
 
@@ -61,7 +59,8 @@ def return_temp_dir():
     """
     temp = tempfile.gettempdir()
     rax = os.path.join(temp, 'genastack_build')
-    mkdir_p(rax)
+
+    shell.ShellCommands(log_name='genastack-common').mkdir_p(rax)
     return tempfile.mkdtemp(prefix='build_temp_', dir=rax)
 
 
@@ -72,8 +71,7 @@ def dbm_create(db_path, db_name, db_key):
     :param db_name: Name of DBM
     """
     db_path = os.path.expanduser(db_path)
-    if not os.path.exists(db_path):
-        os.mkdir(db_path)
+    shell.ShellCommands(log_name='genastack-common').mkdir_p(db_path)
 
     database_path = os.path.join(db_path, '%s.dbm' % db_name)
     with Shelve(file_path=database_path) as db:
@@ -221,65 +219,3 @@ def download(url, headers, local_file, depth=0):
                         break
                     else:
                         f_name.write(chunk)
-
-
-def mkdir_p(path):
-    """'mkdir -p' in Python
-
-    :param path: ``str``
-    """
-    try:
-        if not os.path.isdir(path):
-            os.makedirs(path)
-            LOG.info('Created Directory [ %s ]', path)
-    except OSError as exc:
-        if exc.errno == errno.EEXIST and os.path.isdir(path):
-            pass
-        else:
-            raise OSError(
-                'The provided path can not be turned into a directory.'
-            )
-
-
-def md5_checker(md5sum, local_file):
-    """Return True if the MD5sum of a downloaded file is expected.
-
-    Additionally, if md5sum is None Return True.
-
-    :param md5sum: ``str``
-    :param local_file: ``str``
-    :return: ``bol``
-    """
-    def calc_hash():
-        """Read the hash.
-
-        :return data_hash.read():
-        """
-        return data_hash.read(128 * md5.block_size)
-
-    if md5sum is None:
-        LOG.warn(
-            'No md5sum provided for the downloaded file [ %s ]' % local_file
-        )
-        return True
-
-    if os.path.isfile(local_file) is True:
-        md5 = hashlib.md5()
-
-        with open(local_file, 'rb') as data_hash:
-            for chk in iter(calc_hash, ''):
-                md5.update(chk)
-
-        lmd5sum = md5.hexdigest()
-        if md5sum != lmd5sum:
-            msg = (
-                'CheckSumm Mis-Match "%s" != "%s" for [ %s ]'
-                % (md5sum, lmd5sum, local_file)
-            )
-            LOG.critical(msg)
-            raise genastack.MD5CheckMismatch(msg)
-        else:
-            LOG.info(
-                'Download Successful, md5sum verified for [ %s ]' % local_file
-            )
-            return True

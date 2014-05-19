@@ -10,15 +10,20 @@
 import os
 
 from genastack.common import utils
+from cloudlib import parse_ini
 
+# Check to see if our System Config File Exists
+CONFIG = parse_ini.ConfigurationSetup(log_name='genastack-system')
+ARGS = CONFIG.config_args(section='mysql-connector')
+PROJECT_URL = ARGS.get(
+    'project_url',
+    'http://dev.mysql.com/get/Downloads/Connector-C'
+    '/mysql-connector-c-6.1.3-src.tar.gz'
+)
 
 TEMP_PATH = utils.return_temp_dir()
 WORK_PATH = utils.return_rax_dir()
 LIBS_PATH = utils.return_rax_dir(path='openstack/lib')
-
-
-_URL = 'http://dev.mysql.com/get/Downloads/Connector-C'
-MYSQL_URL = '%s/mysql-connector-c-6.1.3-src.tar.gz' % _URL
 
 
 NAME = 'mysql-connector-c-6.1.3-src.tgz'
@@ -38,7 +43,7 @@ BUILD_DATA = {
         'build': [
             {
                 'get': {
-                    'url': MYSQL_URL,
+                    'url': PROJECT_URL,
                     'path': TEMP_PATH,
                     'name': NAME,
                     'md5sum': '490e2dd5d4f86a20a07ba048d49f36b2',
@@ -51,8 +56,10 @@ BUILD_DATA = {
                 'build_commands': INSTALL_COMMANDS,
             }
         ],
-        'apt_packages': [
-            'cmake'
-        ]
+        'package_install': {
+            'apt': [
+                'cmake'
+            ]
+        }
     }
 }

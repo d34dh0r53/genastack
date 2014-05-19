@@ -8,14 +8,18 @@
 # http://www.gnu.org/licenses/gpl.html
 # =============================================================================
 from genastack.common import utils
+from cloudlib import parse_ini
 
+# Check to see if our System Config File Exists
+CONFIG = parse_ini.ConfigurationSetup(log_name='genastack-system')
+ARGS = CONFIG.config_args(section='berkeley-db')
+PROJECT_URL = ARGS.get(
+    'project_url', 'http://download.oracle.com/berkeley-db/db-6.0.30.tar.gz'
+)
 
 TEMP_PATH = utils.return_temp_dir()
 WORK_PATH = utils.return_rax_dir()
 LIBS_PATH = utils.return_rax_dir(path='openstack/lib')
-
-
-BDBM_URL = 'http://download.oracle.com/berkeley-db/db-6.0.30.tar.gz'
 
 
 INSTALL_COMMANDS = [
@@ -32,7 +36,7 @@ BUILD_DATA = {
         'build': [
             {
                 'get': {
-                    'url': BDBM_URL,
+                    'url': PROJECT_URL,
                     'path': TEMP_PATH,
                     'name': 'db-6.0.30.tgz',
                     'md5sum': 'ad28eb86ad3203b5422844db179c585b',
@@ -45,10 +49,12 @@ BUILD_DATA = {
                 ],
             }
         ],
-        'apt_packages': [
-            'libxft-dev',
-            'tcl8.5-dev',
-            'tk8.5-dev'
-        ]
+        'package_install': {
+            'apt': [
+                'libxft-dev',
+                'tcl8.5-dev',
+                'tk8.5-dev'
+            ]
+        }
     }
 }

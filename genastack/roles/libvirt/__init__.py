@@ -10,15 +10,19 @@
 import os
 
 from genastack.common import utils
+from cloudlib import parse_ini
 
+# Check to see if our System Config File Exists
+CONFIG = parse_ini.ConfigurationSetup(log_name='genastack-system')
+ARGS = CONFIG.config_args(section='libvirt')
+PROJECT_URL = ARGS.get(
+    'project_url', 'http://libvirt.org/sources/libvirt-1.2.2.tar.gz'
+)
 
 TEMP_PATH = utils.return_temp_dir()
 WORK_PATH = utils.return_rax_dir()
 LIBS_PATH = utils.return_rax_dir(path='openstack/lib')
 INCLUDE_PATH = utils.return_rax_dir(path='openstack/include')
-
-
-LIBVIRT_URL = 'http://libvirt.org/sources/libvirt-1.2.2.tar.gz'
 
 
 INSTALL_COMMANDS = [
@@ -44,7 +48,7 @@ BUILD_DATA = {
         'build': [
             {
                 'get': {
-                    'url': LIBVIRT_URL,
+                    'url': PROJECT_URL,
                     'path': TEMP_PATH,
                     'name': 'libvirt-1.2.2.tgz',
                     'md5sum': '592958ad1ddce7574d8cb0a31e635acd',
@@ -58,18 +62,20 @@ BUILD_DATA = {
         'pip_install': [
             'libvirt-python'
         ],
-        'apt_packages': [
-            'libgnutls-dev',
-            'libdevmapper-dev',
-            'libcurl4-gnutls-dev',
-            'libpciaccess-dev',
-            'libnl-dev',
-            'pm-utils',
-            'ebtables',
-            'dnsmasq-base',
-            'libyajl-dev',
-            'uuid-dev'
-        ],
+        'package_install': {
+            'apt': [
+                'libgnutls-dev',
+                'libdevmapper-dev',
+                'libcurl4-gnutls-dev',
+                'libpciaccess-dev',
+                'libnl-dev',
+                'pm-utils',
+                'ebtables',
+                'dnsmasq-base',
+                'libyajl-dev',
+                'uuid-dev'
+            ]
+        },
         'init_script': [
             {
                 'help': 'Start and stop libvirt on boot',

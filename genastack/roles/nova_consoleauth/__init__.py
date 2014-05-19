@@ -26,9 +26,11 @@ BUILD_DATA = {
                 'program': 'nova-consoleauth'
             }
         ],
-        'apt_package': [
-            'novnc',
-            'websockify'
-        ]
+        'package_install': {
+            'apt': [
+                'novnc',
+                'websockify'
+            ]
+        }
     }
 }

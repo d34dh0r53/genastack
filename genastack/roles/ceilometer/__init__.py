@@ -7,10 +7,10 @@
 # details (see GNU General Public License).
 # http://www.gnu.org/licenses/gpl.html
 # =============================================================================
-from genastack.common import system_config
+from cloudlib import parse_ini
 
-
-CONFIG = system_config.ConfigurationSetup()
+# Check to see if our System Config File Exists
+CONFIG = parse_ini.ConfigurationSetup(log_name='genastack-system')
 ARGS = CONFIG.config_args(section='ceilometer')
 BRANCH = ARGS.get('branch', 'master')
 PROJECT_URL = ARGS['project_url']
@@ -72,9 +72,11 @@ BUILD_DATA = {
                 'mode': '0644'
             }
         ],
-        'apt_packages': [
-            'mysql-client',
-            'libmysqlclient-dev'
-        ]
+        'package_install': {
+            'apt': [
+                'mysql-client',
+                'libmysqlclient-dev'
+            ]
+        }
     }
 }

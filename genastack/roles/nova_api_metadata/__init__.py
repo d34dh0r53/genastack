@@ -30,8 +30,10 @@ BUILD_DATA = {
             'pylibmc',
             'python-memcached'
         ],
-        'apt_packages': [
-            'libmemcached-dev'
-        ]
+        'package_install': {
+            'apt': [
+                'libmemcached-dev'
+            ]
+        }
     }
 }

@@ -10,16 +10,21 @@
 import os
 
 from genastack.common import utils
+from cloudlib import parse_ini
+
+# Check to see if our System Config File Exists
+CONFIG = parse_ini.ConfigurationSetup(log_name='genastack-system')
+ARGS = CONFIG.config_args(section='openssl')
+PROJECT_URL = ARGS.get(
+    'project_url',
+    'http://ftp.postgresql.org/pub/source/v9.2.7/postgresql-9.2.7.tar.gz'
+)
 
 
 TEMP_PATH = utils.return_temp_dir()
 WORK_PATH = utils.return_rax_dir()
 LIBS_PATH = utils.return_rax_dir(path='openstack/lib')
 INCLUDE_PATH = utils.return_rax_dir(path='openstack/include')
-
-
-_URL = 'http://ftp.postgresql.org/pub/source/v9.2.7'
-POSTGRESQL_URL = '%s/postgresql-9.2.7.tar.gz' % _URL
 
 
 NAME = 'postgresql-9.2.7.tgz'
@@ -44,7 +49,7 @@ BUILD_DATA = {
         'build': [
             {
                 'get': {
-                    'url': POSTGRESQL_URL,
+                    'url': PROJECT_URL,
                     'path': TEMP_PATH,
                     'name': NAME,
                     'md5sum': 'a61a63fc08b0b27a43b6ca325f49ab4b',
@@ -56,9 +61,11 @@ BUILD_DATA = {
             },
 
         ],
-        'apt_packages': [
-            'bison',
-            'flex'
-        ]
+        'package_install': {
+            'apt': [
+                'bison',
+                'flex'
+            ]
+        }
     }
 }

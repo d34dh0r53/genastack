@@ -10,14 +10,19 @@
 import os
 
 from genastack.common import utils
+from cloudlib import parse_ini
+
+# Check to see if our System Config File Exists
+CONFIG = parse_ini.ConfigurationSetup(log_name='genastack-system')
+ARGS = CONFIG.config_args(section='bzip2')
+PROJECT_URL = ARGS.get(
+    'project_url', 'http://www.bzip.org/1.0.6/bzip2-1.0.6.tar.gz'
+)
 
 
 TEMP_PATH = utils.return_temp_dir()
 WORK_PATH = utils.return_rax_dir()
 LIBS_PATH = utils.return_rax_dir(path='openstack/lib')
-
-
-BZIP_URL = 'http://www.bzip.org/1.0.6/bzip2-1.0.6.tar.gz'
 
 
 INSTALL_COMMANDS = [
@@ -32,7 +37,7 @@ BUILD_DATA = {
         'build': [
             {
                 'get': {
-                    'url': BZIP_URL,
+                    'url': PROJECT_URL,
                     'path': TEMP_PATH,
                     'name': 'bzip2-1.0.6.tgz',
                     'md5sum': '00b516f4704d4a7cb50a1d97e6e8e15b',

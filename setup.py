@@ -13,7 +13,7 @@ import sys
 
 import setuptools
 
-from genastack import info
+import genastack
 from genastack import roles
 
 packages = [
@@ -41,15 +41,15 @@ with open('README', 'rb') as r_file:
     LDINFO = r_file.read()
 
 setuptools.setup(
-    name=info.__appname__,
-    version=info.__version__,
-    author=info.__author__,
-    author_email=info.__email__,
-    description=info.__description__,
+    name=genastack.__appname__,
+    version=genastack.__version__,
+    author=genastack.__author__,
+    author_email=genastack.__email__,
+    description=genastack.__description__,
     long_description=LDINFO,
     license='GNU General Public License v3 or later (GPLv3+)',
     packages=packages,
-    url=info.__url__,
+    url=genastack.__url__,
     install_requires=required,
     classifiers=[
         'Development Status :: 5 - Production/Stable',
@@ -62,7 +62,9 @@ setuptools.setup(
         'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
         'Topic :: Utilities',
-        'Topic :: Software Development :: Libraries :: Python Modules'],
+        'Topic :: Software Development :: Libraries :: Python Modules'
+    ],
     entry_points={
-        "console_scripts": ["genastack = genastack.run:executable"]}
+        "console_scripts": ["genastack = genastack.run:executable"]
+    }
 )
