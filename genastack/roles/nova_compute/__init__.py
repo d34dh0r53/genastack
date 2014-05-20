@@ -28,16 +28,18 @@ BUILD_DATA = {
             }
         ],
         'package_install': {
-            'apt': [
-                'open-iscsi',
-                'parted',
-                'qemu-utils',
-                'genisoimage',
-                'vlan',
-                'kpartx',
-                'ebtables',
-                'gawk'
-            ]
+            'apt': {
+                'packages': [
+                    'open-iscsi',
+                    'parted',
+                    'qemu-utils',
+                    'genisoimage',
+                    'vlan',
+                    'kpartx',
+                    'ebtables',
+                    'gawk'
+                ]
+            }
         }
     }
 }

@@ -50,11 +50,13 @@ BUILD_DATA = {
             }
         ],
         'package_install': {
-            'apt': [
-                'libxft-dev',
-                'tcl8.5-dev',
-                'tk8.5-dev'
-            ]
+            'apt': {
+                'packages': [
+                    'libxft-dev',
+                    'tcl8.5-dev',
+                    'tk8.5-dev'
+                ]
+            }
         }
     }
 }

@@ -62,10 +62,12 @@ BUILD_DATA = {
 
         ],
         'package_install': {
-            'apt': [
-                'bison',
-                'flex'
-            ]
+            'apt': {
+                'packages': [
+                    'bison',
+                    'flex'
+                ]
+            }
         }
     }
 }

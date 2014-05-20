@@ -80,21 +80,23 @@ BUILD_DATA = {
             'mysql-python'
         ],
         'package_install': {
-            'apt': [
-                'mysql-client',
-                'libmysqlclient-dev',
-                'libsasl2-dev debhelper',
-                'dh-apparmor',
-                'docutils-common',
-                'libjs-sphinxdoc',
-                'libjs-underscore',
-                'libxslt1.1',
-                'libxslt1-dev',
-                'libxml2-dev',
-                'libssl-dev',
-                'libldap2-dev',
-                'libffi-dev'
-            ]
+            'apt': {
+                'packages': [
+                    'mysql-client',
+                    'libmysqlclient-dev',
+                    'libsasl2-dev debhelper',
+                    'dh-apparmor',
+                    'docutils-common',
+                    'libjs-sphinxdoc',
+                    'libjs-underscore',
+                    'libxslt1.1',
+                    'libxslt1-dev',
+                    'libxml2-dev',
+                    'libssl-dev',
+                    'libldap2-dev',
+                    'libffi-dev'
+                ]
+            }
         }
     }
 }

@@ -38,6 +38,7 @@ def argument_parser():
         for key, value in role.items():
             base = subparser.add_parser(key, help=value.get('help'))
             base.set_defaults(method=key)
+
     return parser
 
 

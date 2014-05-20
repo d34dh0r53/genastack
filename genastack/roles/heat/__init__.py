@@ -73,10 +73,12 @@ BUILD_DATA = {
             }
         ],
         'package_install': {
-            'apt': [
-                'mysql-client',
-                'libmysqlclient-dev'
-            ]
+            'apt': {
+                'packages': [
+                    'mysql-client',
+                    'libmysqlclient-dev'
+                ]
+            }
         }
     }
 }

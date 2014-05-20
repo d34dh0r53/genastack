@@ -91,14 +91,16 @@ BUILD_DATA = {
             '--allow-all-external pywbem'
         ],
         'package_install': {
-            'apt': [
-                'lvm2',
-                'tgt',
-                'open-iscsi',
-                'qemu-utils',
-                'sysfsutils',
-                'nfs-common'
-            ]
+            'apt': {
+                'packages': [
+                    'lvm2',
+                    'tgt',
+                    'open-iscsi',
+                    'qemu-utils',
+                    'sysfsutils',
+                    'nfs-common'
+                ]
+            }
         }
     }
 }

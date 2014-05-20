@@ -38,37 +38,39 @@ BUILD_DATA = {
             'virtualenv'
         ],
         'package_install': {
-            'apt': [
-                'zlib1g-dev',
-                'libdb-dev',
-                'libxml2',
-                'libxml2-dev',
-                'libncurses5-dev',
-                'libbz2-dev',
-                'liblz-dev',
-                'libexpat1',
-                'libncursesw5-dev',
-                'libreadline6',
-                'libreadline6-dev',
-                'libreadline-dev',
-                'libcroco3',
-                'libgettextpo0',
-                'libssl-dev',
-                'libgdbm-dev',
-                'libc6-dev',
-                'libsqlite3-dev',
-                'libxslt1-dev',
-                'libxslt1.1',
-                'tk-dev',
-                'libmysqlclient-dev',
-                'libpq-dev',
-                'libxft-dev',
-                'tcl8.5-dev',
-                'tk8.5-dev',
-                'libffi-dev',
-                'python-libvirt',
-                'python-dev'
-            ]
+            'apt': {
+                'packages': [
+                    'zlib1g-dev',
+                    'libdb-dev',
+                    'libxml2',
+                    'libxml2-dev',
+                    'libncurses5-dev',
+                    'libbz2-dev',
+                    'liblz-dev',
+                    'libexpat1',
+                    'libncursesw5-dev',
+                    'libreadline6',
+                    'libreadline6-dev',
+                    'libreadline-dev',
+                    'libcroco3',
+                    'libgettextpo0',
+                    'libssl-dev',
+                    'libgdbm-dev',
+                    'libc6-dev',
+                    'libsqlite3-dev',
+                    'libxslt1-dev',
+                    'libxslt1.1',
+                    'tk-dev',
+                    'libmysqlclient-dev',
+                    'libpq-dev',
+                    'libxft-dev',
+                    'tcl8.5-dev',
+                    'tk8.5-dev',
+                    'libffi-dev',
+                    'python-libvirt',
+                    'python-dev'
+                ]
+            }
         }
     }
 }

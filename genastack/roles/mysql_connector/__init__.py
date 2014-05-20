@@ -57,9 +57,11 @@ BUILD_DATA = {
             }
         ],
         'package_install': {
-            'apt': [
-                'cmake'
-            ]
+            'apt': {
+                'packages': [
+                    'cmake'
+                ]
+            }
         }
     }
 }

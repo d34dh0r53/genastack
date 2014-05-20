@@ -93,21 +93,23 @@ BUILD_DATA = {
             }
         ],
         'package_install': {
-            'apt': [
-                'libmysqlclient-dev',
-                'gettext',
-                'help2man',
-                'html2text',
-                'libxml2-dev',
-                'intltool-debian',
-                'git-core',
-                'curl',
-                'openssl',
-                'build-essential',
-                'bridge-utils',
-                'cgroup-lite',
-                'gawk'
-            ]
+            'apt': {
+                'packages': [
+                    'libmysqlclient-dev',
+                    'gettext',
+                    'help2man',
+                    'html2text',
+                    'libxml2-dev',
+                    'intltool-debian',
+                    'git-core',
+                    'curl',
+                    'openssl',
+                    'build-essential',
+                    'bridge-utils',
+                    'cgroup-lite',
+                    'gawk'
+                ]
+            }
         }
     }
 }

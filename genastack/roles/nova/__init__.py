@@ -88,19 +88,21 @@ BUILD_DATA = {
             'eventlet',
         ],
         'package_install': {
-            'apt': [
-                'multipath-tools',
-                'sysfsutils',
-                'sg3-utils',
-                'libvirt-bin',
-                'libvirt-dev',
-                'libvirt0',
-                'python-libvirt',
-                'pm-utils',
-                'kvm',
-                'qemu-utils',
-                'iptables'
-            ]
+            'apt': {
+                'packages': [
+                    'multipath-tools',
+                    'sysfsutils',
+                    'sg3-utils',
+                    'libvirt-bin',
+                    'libvirt-dev',
+                    'libvirt0',
+                    'python-libvirt',
+                    'pm-utils',
+                    'kvm',
+                    'qemu-utils',
+                    'iptables'
+                ]
+            }
         }
     }
 }

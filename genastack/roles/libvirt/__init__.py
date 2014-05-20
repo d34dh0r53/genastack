@@ -63,18 +63,20 @@ BUILD_DATA = {
             'libvirt-python'
         ],
         'package_install': {
-            'apt': [
-                'libgnutls-dev',
-                'libdevmapper-dev',
-                'libcurl4-gnutls-dev',
-                'libpciaccess-dev',
-                'libnl-dev',
-                'pm-utils',
-                'ebtables',
-                'dnsmasq-base',
-                'libyajl-dev',
-                'uuid-dev'
-            ]
+            'apt': {
+                'packages': [
+                    'libgnutls-dev',
+                    'libdevmapper-dev',
+                    'libcurl4-gnutls-dev',
+                    'libpciaccess-dev',
+                    'libnl-dev',
+                    'pm-utils',
+                    'ebtables',
+                    'dnsmasq-base',
+                    'libyajl-dev',
+                    'uuid-dev'
+                ]
+            }
         },
         'init_script': [
             {

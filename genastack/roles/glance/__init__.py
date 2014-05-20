@@ -73,9 +73,11 @@ BUILD_DATA = {
             'warlock'
         ],
         'package_install': {
-            'apt': [
-                'sqlite3'
-            ]
+            'apt': {
+                'packages': [
+                    'sqlite3'
+                ]
+            }
         }
     }
 }

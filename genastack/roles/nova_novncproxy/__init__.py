@@ -27,10 +27,12 @@ BUILD_DATA = {
             }
         ],
         'package_install': {
-            'apt': [
-                'novnc',
-                'websockify'
-            ]
+            'apt': {
+                'packages': [
+                    'novnc',
+                    'websockify'
+                ]
+            }
         }
     }
 }
