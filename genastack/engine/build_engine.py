@@ -75,9 +75,10 @@ class EngineRunner(object):
 
         LOG.info('Downloading [ %s ] to [ %s ]', url, local_path)
         utils.download(url, headers=headers, local_file=local_file)
-        self.shell.md5_checker(
-            md5sum=kwargs.get('md5sum'), local_file=local_file
-        )
+        if 'md5sum' in kwargs:
+            self.shell.md5_checker(
+                md5sum=kwargs['md5sum'], local_file=local_file
+            )
         if kwargs.get('uncompress') is True:
             local_path = kwargs.get('path')
 
