@@ -190,6 +190,7 @@ class EngineRunner(object):
                 git_setup = [
                     'git clone "%s" "%s"' % (repo['project_url'], name),
                 ]
+                print "Executing command: {}".format(git_setup)
                 self.__execute_command(commands=git_setup)
                 clone_path = os.path.join(temp_dir, name)
                 os.chdir(clone_path)
