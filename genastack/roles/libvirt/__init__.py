@@ -10,14 +10,13 @@
 import os
 
 from genastack.common import utils
-from cloudlib import parse_ini
 
-# Check to see if our System Config File Exists
-CONFIG = parse_ini.ConfigurationSetup(log_name='genastack-system')
-ARGS = CONFIG.config_args(section='libvirt')
+
+ARGS = utils.get_role_config('libvirt')
 PROJECT_URL = ARGS.get(
     'project_url', 'http://libvirt.org/sources/libvirt-1.2.2.tar.gz'
 )
+
 
 TEMP_PATH = utils.return_temp_dir()
 WORK_PATH = utils.return_rax_dir()

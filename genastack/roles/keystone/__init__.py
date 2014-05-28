@@ -7,13 +7,14 @@
 # details (see GNU General Public License).
 # http://www.gnu.org/licenses/gpl.html
 # =============================================================================
-from cloudlib import parse_ini
+from genastack.common import utils
 
-# Check to see if our System Config File Exists
-CONFIG = parse_ini.ConfigurationSetup(log_name='genastack-system')
-ARGS = CONFIG.config_args(section='keystone')
+
+ARGS = utils.get_role_config('keystone')
 BRANCH = ARGS.get('branch', 'master')
-PROJECT_URL = ARGS['project_url']
+PROJECT_URL = ARGS.get(
+    'project_url', 'https://github.com/openstack/keystone.git'
+)
 
 
 BUILD_DATA = {

@@ -10,11 +10,8 @@
 import os
 
 from genastack.common import utils
-from cloudlib import parse_ini
 
-# Check to see if our System Config File Exists
-CONFIG = parse_ini.ConfigurationSetup(log_name='genastack-system')
-ARGS = CONFIG.config_args(section='bzip2')
+ARGS = utils.get_role_config('bzip2')
 PROJECT_URL = ARGS.get(
     'project_url', 'http://www.bzip.org/1.0.6/bzip2-1.0.6.tar.gz'
 )

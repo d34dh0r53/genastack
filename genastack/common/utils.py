@@ -16,6 +16,8 @@ import tempfile
 import urlparse
 
 from cloudlib import shell
+from cloudlib import parse_ini
+
 
 LOG = logging.getLogger('genastack-common')
 
@@ -219,3 +221,10 @@ def download(url, headers, local_file, depth=0):
                         break
                     else:
                         f_name.write(chunk)
+
+
+def get_role_config(section):
+    # Check to see if our System Config File Exists
+    config = parse_ini.ConfigurationSetup(log_name='genastack-system')
+    config.load_config(name='genastack', home=True, ext='conf')
+    return config.config_args(section=section)

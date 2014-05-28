@@ -10,16 +10,16 @@
 import os
 
 from genastack.common import utils
-from cloudlib import parse_ini
 
-# Check to see if our System Config File Exists
-CONFIG = parse_ini.ConfigurationSetup(log_name='genastack-system')
-ARGS = CONFIG.config_args(section='mysql-connector')
+
+ARGS = utils.get_role_config('mysql-connector')
+BRANCH = ARGS.get('branch', 'master')
 PROJECT_URL = ARGS.get(
     'project_url',
     'http://dev.mysql.com/get/Downloads/Connector-C'
     '/mysql-connector-c-6.1.3-src.tar.gz'
 )
+
 
 TEMP_PATH = utils.return_temp_dir()
 WORK_PATH = utils.return_rax_dir()

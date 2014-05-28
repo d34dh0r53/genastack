@@ -8,11 +8,8 @@
 # http://www.gnu.org/licenses/gpl.html
 # =============================================================================
 from genastack.common import utils
-from cloudlib import parse_ini
 
-# Check to see if our System Config File Exists
-CONFIG = parse_ini.ConfigurationSetup(log_name='genastack-system')
-ARGS = CONFIG.config_args(section='berkeley-db')
+ARGS = utils.get_role_config('berkeley-db')
 PROJECT_URL = ARGS.get(
     'project_url', 'http://download.oracle.com/berkeley-db/db-6.0.30.tar.gz'
 )
